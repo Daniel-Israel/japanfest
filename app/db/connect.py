@@ -1,5 +1,7 @@
 from os import getenv
+
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 
 from app.config.log import create_logger
 
@@ -14,13 +16,16 @@ class Connection:
         self.user = getenv("DB_USER", "postgres")
         self.password = getenv("DB_PASSWORD", "pwd")
         self.database = getenv("DB_DATABASE", "postgres")
+        self.engine = None
+        self.SessionFactory = None
 
     def __enter__(self):
         logger.info("Criando engine para a conexão com o DB")
         try:
             self.engine = \
             create_engine(
-                f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+                f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}",
+                pool_pre_ping=True
             )
         except Exception as ex:
             logger.error("Erro ao criar engine para a conexão com o DB:\n{}".format(ex))
