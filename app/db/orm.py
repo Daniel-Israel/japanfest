@@ -55,7 +55,7 @@ class Orders(Base):
     total_price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
  
  
-class OrderItems(Base):
+class OrdersItems(Base):
     __tablename__ = "orders_items"
  
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
