@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_PASSWORD: pwd
     volumes:
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./src/schema.sql:/docker-entrypoint-initdb.d/init-db.sql
       - data:/data/postgres
 
 volumes:
