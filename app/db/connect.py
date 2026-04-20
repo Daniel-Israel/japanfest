@@ -19,20 +19,24 @@ class Connection:
         self.engine = None
         self.SessionFactory = None
 
-    def __enter__(self):
+
+    def connect(self):
         logger.info("Criando engine para a conexão com o DB")
-        try:
-            self.engine = \
-            create_engine(
-                f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}",
-                pool_pre_ping=True
-            )
-        except Exception as ex:
-            logger.error("Erro ao criar engine para a conexão com o DB:\n{}".format(ex))
-
+        
+        self.engine = create_engine(
+            f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}",
+            pool_pre_ping=True
+        )
+        self.SessionFactory = sessionmaker(bind=self.engine)
         logger.info("Conexão com o DB criada")
-        return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+
+    def disconnect(self):
         logger.info("Fechando conexão com o DB")
         self.engine.dispose()
+
+
+    def get_session(self) -> Session:
+        return self.SessionFactory()
+
+db = Connection()
