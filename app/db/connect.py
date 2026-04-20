@@ -41,7 +41,7 @@ class Connection:
 
 db = Connection()
 
-def get_session(db):
+def get_session():
     session = db.get_session()
     try:
         yield session
