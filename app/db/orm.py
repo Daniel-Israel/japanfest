@@ -21,7 +21,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class Product(Base):
+class Products(Base):
     __tablename__ = "products"
  
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
@@ -32,7 +32,7 @@ class Product(Base):
     priority: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
  
  
-class Order(Base):
+class Orders(Base):
     __tablename__ = "orders"
  
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
@@ -55,7 +55,7 @@ class Order(Base):
     total_price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
  
  
-class OrderItem(Base):
+class OrderItems(Base):
     __tablename__ = "orders_items"
  
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
@@ -69,7 +69,7 @@ class OrderItem(Base):
     unit_price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
  
  
-class Stock(Base):
+class Stocks(Base):
     __tablename__ = "stock"
  
     product_id: Mapped[int] = mapped_column(
@@ -78,7 +78,7 @@ class Stock(Base):
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
  
  
-class StockMoviment(Base):
+class StockMoviments(Base):
     __tablename__ = "stock_moviments"
  
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
