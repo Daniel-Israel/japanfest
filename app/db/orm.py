@@ -9,6 +9,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    LargeBinary,
     func,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -25,6 +26,7 @@ class Product(Base):
  
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
+    image_data: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     category: Mapped[str] = mapped_column(String, nullable=False)
     price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     priority: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

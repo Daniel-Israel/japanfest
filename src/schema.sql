@@ -31,7 +31,8 @@ CREATE TABLE products (
     name          VARCHAR         NOT NULL,
     category      VARCHAR         NOT NULL,
     price         NUMERIC(10, 2)  NOT NULL,
-    priority      BOOLEAN         NOT NULL DEFAULT FALSE
+    priority      BOOLEAN         NOT NULL DEFAULT FALSE,
+    image_data      BYTEA
 );
  
 -- ---------------------------------------------------------------------------
