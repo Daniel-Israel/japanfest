@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import Response
 
 from app.db import orm
-from app.util.enums import PaymentMethod
+from app.util.enums import PaymentMethod, OrderStatus
 
 
 def to_dict(obj):
@@ -52,6 +52,19 @@ def list_product_info(session: Session, id: int) -> dict:
     ).where(orm.Products.id == id)
     result = session.execute(sql).mappings().first()
     return dict(result) if result else None
+
+
+def list_orders(session: Session) -> dict:
+    sql = select(
+        orm.Orders.id,
+        orm.Orders.priority,
+        orm.Orders.status
+    ).where(orm.Orders.status != OrderStatus.delivered.value)
+    result = session.execute(sql).all()
+    return [
+        {"id": id, "priority": priority ,"status": status}
+        for id, priority, status in result
+    ]
 
 
 def create_product(session: Session, product: orm.Products):

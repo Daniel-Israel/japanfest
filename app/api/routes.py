@@ -24,7 +24,7 @@ async def redirecionar_para_docs():
 
 
 @app.get("/products")
-async def create_product(session: Session = Depends(get_session)):
+async def list_products(session: Session = Depends(get_session)):
     return bdops.list_products(session)
 
 
@@ -36,6 +36,11 @@ async def product_image(id: int, session: Session = Depends(get_session)):
 @app.get("/product/info/{id}")
 async def product_info(id: int, session: Session = Depends(get_session)):
     return bdops.list_product_info(session, id)
+
+
+@app.get("/orders")
+async def list_orders(session: Session = Depends(get_session)):
+    return bdops.list_orders(session)
 
 
 @app.post("/product")
