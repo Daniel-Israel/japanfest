@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Japanfest",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

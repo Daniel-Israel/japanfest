@@ -1,0 +1,30 @@
+meta {
+  name: Create Order
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8000/order
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "list_items": [
+      {
+        "id": 1,
+        "quantity": 2,
+        "unit_price": 12.30
+      },
+      {
+        "id": 2,
+        "quantity": 1,
+        "unit_price": 6.15
+      }
+    ],
+    "payment_method": "Pix",
+    "total_price": 18.45
+  }
+}
