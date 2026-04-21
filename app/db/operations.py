@@ -23,13 +23,14 @@ def check_priority(session: Session, list_products: list[int]) -> bool:
 def list_products(session: Session) -> pd.DataFrame:
     sql = select(
         orm.Products.name,
+        orm.Products.id,
         orm.Products.category,
         orm.Products.price
     )
     result = session.execute(sql).all()
     return [
-        {"name": name, "category": category, "price": price}
-        for name, category, price in result
+        {"name": name, "id": id, "category": category, "price": price}
+        for name, id, category, price in result
     ]
 
 

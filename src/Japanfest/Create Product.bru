@@ -1,7 +1,7 @@
 meta {
   name: Create Product
   type: http
-  seq: 5
+  seq: 4
 }
 
 post {
@@ -29,9 +29,9 @@ body:form-urlencoded {
 }
 
 body:multipart-form {
-  name: Produto 3
+  name: Produto 4
   category: Bebidas
   price: 23.99
-  priority: true
+  priority: false
   image_data: @file(\\wsl.localhost\Ubuntu\home\dani\git\backend-festival-japao\src\test_image.jpg)
 }
