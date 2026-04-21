@@ -46,11 +46,22 @@ class Orders(Base):
         onupdate=func.now(),
     )
     status: Mapped[enums.OrderStatus] = mapped_column(
-        Enum(enums.OrderStatus, name="order_status"), nullable=False, default=enums.OrderStatus.queue
+        Enum(
+                enums.OrderStatus, 
+                name="order_status",
+                values_callable=lambda e: [i.value for i in e]
+            ), 
+            nullable=False,
+            default=enums.OrderStatus.queue.value
     )
     priority: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     payment_method: Mapped[enums.PaymentMethod] = mapped_column(
-        Enum(enums.PaymentMethod, name="payment_method"), nullable=False
+        Enum(
+                enums.PaymentMethod, 
+                name="payment_method",
+                values_callable=lambda e: [i.value for i in e]
+            ), 
+            nullable=False
     )
     total_price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
  
@@ -90,7 +101,12 @@ class StockMoviments(Base):
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     type: Mapped[enums.MovimentType] = mapped_column(
-        Enum(enums.MovimentType, name="moviment_type"), nullable=False
+        Enum(
+                enums.MovimentType, 
+                name="moviment_type",
+                values_callable=lambda e: [i.value for i in e]
+            ), 
+            nullable=False
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
