@@ -77,6 +77,10 @@ async def create_order(
 
 
 @app.patch("/order/{id}/{status}")
-async def alter_order(id: int, status: enums.OrderStatus):
-    pass
+async def alter_order(
+        id: int, 
+        status: enums.OrderStatus,
+        session: Session = Depends(get_session)
+    ):
+    return bdops.alter_order_status(session, id, status)
 

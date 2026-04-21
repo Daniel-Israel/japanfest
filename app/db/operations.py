@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import select, func
+from sqlalchemy import select, update, func
 from sqlalchemy.orm import Session
 from fastapi import Response
 
@@ -110,3 +110,13 @@ def create_order(
     session.commit()
     session.refresh(order)
     return order.id
+
+
+def alter_order_status(
+        session: Session,
+        id: int,
+        new_status: OrderStatus
+    ) -> None:
+    sql = update(orm.Orders).where(orm.Orders.id == id).values(status=new_status.value)
+    session.execute(sql)
+    return
