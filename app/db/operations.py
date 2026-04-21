@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import select, insert
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from fastapi import Response
 
@@ -66,6 +66,26 @@ def list_orders(session: Session) -> dict:
         {"id": id, "priority": priority ,"status": status}
         for id, priority, status in result
     ]
+
+
+def list_orders_items(session: Session) -> list[dict]:
+    sql = (
+        select(
+            orm.Orders.id,
+            orm.Orders.priority,
+            orm.Orders.status,
+            func.array_agg(orm.Products.name).label("products")
+        )
+        .join(orm.OrdersItems, orm.OrdersItems.order_id == orm.Orders.id)
+        .join(orm.Products, orm.Products.id == orm.OrdersItems.product_id)
+        .group_by(
+            orm.Orders.id,
+            orm.Orders.priority,
+            orm.Orders.status,
+        )
+    )
+    result = session.execute(sql).all()
+    return [row._asdict() for row in result]
 
 
 def create_product(session: Session, product: orm.Products):

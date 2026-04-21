@@ -43,6 +43,11 @@ async def list_orders(session: Session = Depends(get_session)):
     return bdops.list_orders(session)
 
 
+@app.get("/orders/items")
+async def list_orders_and_items(session: Session = Depends(get_session)):
+    return bdops.list_orders_items(session)
+
+
 @app.post("/product")
 async def create_product(
         name: str = Form(...),
