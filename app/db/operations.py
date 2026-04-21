@@ -109,7 +109,7 @@ def create_order(
     session.add(order)
     session.commit()
     session.refresh(order)
-    return order.id
+    return {"id": order.id}
 
 
 def alter_order_status(
