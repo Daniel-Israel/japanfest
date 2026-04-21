@@ -1,13 +1,23 @@
 import pandas as pd
-from sqlalchemy import select
+from sqlalchemy import select, insert
 from sqlalchemy.orm import Session
 from fastapi import Response
 
 from app.db import orm
+from app.util.enums import PaymentMethod
 
 
 def to_dict(obj):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+
+
+def check_priority(session: Session, list_products: list[int]) -> bool:
+    sql = select(orm.Products.priority).where(orm.Products.id.in_(list_products))
+    priorities = session.execute(sql).scalars().all()
+    if False in priorities:
+        return False
+    else:
+        return True
 
 
 def list_products(session: Session) -> pd.DataFrame:
@@ -49,3 +59,20 @@ def create_product(session: Session, product: orm.Products):
     session.commit()
     session.refresh(product)
     return {"id": product.id, "name": product.name}
+
+
+def create_order(
+        session: Session, 
+        payment_method: PaymentMethod,
+        priority: bool,
+        total_price: float
+    ) -> int:
+    order = orm.Orders(
+        payment_method=payment_method.value,
+        priority=priority,
+        total_price=total_price
+    )
+    session.add(order)
+    session.commit()
+    session.refresh(order)
+    return order.id

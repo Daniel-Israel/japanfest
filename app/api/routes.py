@@ -5,8 +5,11 @@ from sqlalchemy.orm import Session
 from app.config.log import create_logger
 from app.api.api import app
 from app.db.connect import get_session
-from app.db import operations as bdaop
+from app.db import operations as bdops
+from app.api import operations as apiops
 from app.db import orm
+from app.util import enums
+from app.api import models
 
 
 logger = create_logger()
@@ -22,17 +25,17 @@ async def redirecionar_para_docs():
 
 @app.get("/products")
 async def create_product(session: Session = Depends(get_session)):
-    return bdaop.list_products(session)
+    return bdops.list_products(session)
 
 
 @app.get("/product/image/{id}")
 async def product_image(id: int, session: Session = Depends(get_session)):
-    return bdaop.list_product_image(session, int(id))
+    return bdops.list_product_image(session, int(id))
 
 
 @app.get("/product/info/{id}")
 async def product_info(id: int, session: Session = Depends(get_session)):
-    return bdaop.list_product_info(session, id)
+    return bdops.list_product_info(session, id)
 
 
 @app.post("/product")
@@ -45,5 +48,25 @@ async def create_product(
         session: Session = Depends(get_session)
     ):
     file_bytes = await image_data.read()
-    product = orm.Products(name=name, category=category, price=price, priority=priority, image_data=file_bytes)
-    return bdaop.create_product(session, product)
+    product = orm.Products(
+        name=name, 
+        category=category, 
+        price=price, 
+        priority=priority, 
+        image_data=file_bytes
+    )
+    return bdops.create_product(session, product)
+
+
+@app.post("/order")
+async def create_order(
+    order: models.NewOrder,
+    session: Session = Depends(get_session)
+):
+    return apiops.create_order(session, order)
+
+
+@app.patch("/order/{id}/{status}")
+async def alter_order(id: int, status: enums.OrderStatus):
+    pass
+
