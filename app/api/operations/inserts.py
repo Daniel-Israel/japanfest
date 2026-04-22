@@ -38,7 +38,7 @@ def create_stock_moviment(
 
 def create_order(
     session: Session,
-    order = models.NewOrder
+    order: models.NewOrder
 ) -> int:
     list_ids = []
     for item in order.list_items:
@@ -81,7 +81,7 @@ def prepare_stock_moviments(
     return list_moviments
 
 
-def create_order_and_items(session: Session, order = models.NewOrder) -> int:
+def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     order_id = create_order(session, order)
     order_items = prepare_order_items(order_id, order.list_items)
     moviments = prepare_stock_moviments(order_items)
