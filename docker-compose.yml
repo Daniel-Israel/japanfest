@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:latest
+    container_name: bd-festival
     ports:
       - 5432:5432
     environment:
@@ -8,6 +9,16 @@ services:
     volumes:
       - ./src/schema.sql:/docker-entrypoint-initdb.d/init-db.sql
       - data:/data/postgres
+
+  app:
+    image: backend-festival:1.0
+    container_name: backend-festival
+    environment:
+      DB_HOST: db
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
 
 volumes:
   data:
