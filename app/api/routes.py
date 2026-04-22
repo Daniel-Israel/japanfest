@@ -62,11 +62,10 @@ async def create_product(
         session: Session = Depends(get_session)
     ):
     file_bytes = await image_data.read()
-    product = apiops.create_product(
+    return apiops.create_product(
         session, name,  category, 
         price, priority, file_bytes
     )
-    return product
 
 
 @app.post("/order", tags=["Tela Venda"])

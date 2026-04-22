@@ -112,9 +112,11 @@ def create_order(
     return order.id
 
 
-def insert_list(session: Session, list_items: list[ORMOBJECT]) -> None:
+def insert_list(session: Session, list_items: list[ORMOBJECT]) -> list[ORMOBJECT]:
     session.add_all(list_items)
     session.commit()
+    for item in list_items:
+        session.refresh(item)
     return
 
 
