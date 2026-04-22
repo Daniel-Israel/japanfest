@@ -98,3 +98,12 @@ def list_orders_items(session: Session) -> list[dict]:
     )
     result = operations.select_many(session, sql)
     return [row._asdict() for row in result]
+
+
+def list_stock(session: Session) -> list[dict]:
+    sql = select(orm.Stocks.product_id, orm.Stocks.quantity)
+    result = operations.select_many(session, sql)
+    return [
+        {"product_id": product_id, "quantity": quantity}
+        for product_id, quantity in result
+    ]
