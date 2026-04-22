@@ -123,8 +123,7 @@ def create_order(
 
 
 def create_order_items(session: Session, order_items: list[orm.OrdersItems]) -> None:
-    for order_item in order_items:
-        session.add(order_item)
+    session.add_all(order_items)
     session.commit()
     return
 
