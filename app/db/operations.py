@@ -30,7 +30,7 @@ def _do_insert(session: Session, items: Sequence[T]) -> List[T]:
     try:
         session.add_all(items)
         session.commit()
-    except SQLAlchemyError as exc:
+    except SQLAlchemyError:
         session.rollback()
         log.exception("Failed to insert; transaction rolled back")
         raise
