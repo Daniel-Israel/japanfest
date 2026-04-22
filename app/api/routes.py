@@ -73,7 +73,7 @@ async def create_order(
     order: models.NewOrder,
     session: Session = Depends(get_session)
 ):
-    return apiops.create_order(session, order)
+    return apiops.create_order_and_items(session, order)
 
 
 @app.patch("/order/{id}/{status}")

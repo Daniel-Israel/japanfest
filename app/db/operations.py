@@ -112,6 +112,13 @@ def create_order(
     return order.id
 
 
+def create_order_items(session: Session, order_items: list[orm.OrdersItems]) -> None:
+    for order_item in order_items:
+        session.add(order_item)
+    session.commit()
+    return
+
+
 def alter_order_status(
         session: Session,
         id: int,
