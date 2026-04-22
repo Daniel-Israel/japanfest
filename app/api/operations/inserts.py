@@ -11,15 +11,15 @@ def create_product(
         session: Session, name: str, category: str,  
         price: float, priority: bool, image_data: bytes
     ):
-    product = operations.insert_item(
+    product = operations._do_insert(
         session,
-        orm.Products(
+        [orm.Products(
             name=name, image_data=image_data, 
             category=category, price=price, 
             priority=priority
-        )
+        )]
     )
-    product = to_dict(product)
+    product = to_dict(product[0])
     product.pop("image_data", None)
     
     return product
@@ -33,7 +33,7 @@ def create_stock_moviment(
         quantity=moviment.quantity,
         type=moviment.type,
     )
-    return operations.insert_item(session, stock_moviment)
+    return operations._do_insert(session, [stock_moviment])
 
 
 def create_order(
@@ -52,7 +52,7 @@ def create_order(
         total_price=order.total_price
     )
 
-    return operations.insert_item(session, order).id
+    return operations._do_insert(session, [order])[0].id
     
 
 def prepare_order_items(
@@ -85,6 +85,6 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     order_id = create_order(session, order)
     order_items = prepare_order_items(order_id, order.list_items)
     moviments = prepare_stock_moviments(order_items)
-    operations.insert_list(session, order_items)
-    operations.insert_list(session, moviments)
+    operations._do_insert(session, order_items)
+    operations._do_insert(session, moviments)
     return {"id": order_id}
