@@ -32,7 +32,7 @@ def list_products(session: Session) -> dict:
         orm.Products.id,
         orm.Products.category,
         orm.Products.price
-    )
+    ).order_by(orm.Products.id)
     result = operations.select_many(session, sql)
     return [
         {"name": name, "id": id, "category": category, "price": price}
@@ -59,6 +59,7 @@ def list_product_info(session: Session, id_: int) -> dict | None:
             orm.Products.priority,
         )
         .where(orm.Products.id == id_)
+        .order_by(orm.Products.id)
     )
     result = operations.select_one(session, sql)
     return dict(result) if result else None
@@ -72,6 +73,7 @@ def list_orders(session: Session) -> list[dict]:
             orm.Orders.status,
         )
         .where(orm.Orders.status != OrderStatus.delivered.value)
+        .order_by(orm.Orders.id)
     )
     rows = operations.select_many(session, sql)
     return [
@@ -95,6 +97,7 @@ def list_orders_items(session: Session) -> list[dict]:
             orm.Orders.priority,
             orm.Orders.status,
         )
+        .order_by(orm.Orders.id)
     )
     result = operations.select_many(session, sql)
     return [row._asdict() for row in result]
