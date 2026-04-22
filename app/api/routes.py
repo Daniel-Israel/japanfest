@@ -10,12 +10,11 @@ from app.util import enums
 from app.api import models
 
 
-logger = create_logger()
+log = create_logger()
 
 
 @app.get("/", tags=["ADM"])
 async def redirecionar_para_docs():
-    logger.error("erro")
     return RedirectResponse(
         url=app.docs_url, status_code=307
     )

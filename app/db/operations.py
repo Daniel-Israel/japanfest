@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from collections.abc import Callable, Sequence
 from typing import Any, Optional, TypeVar
 
@@ -9,12 +8,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import Select
 
 from app.util.types import ORMOBJECT
+from app.config.log import create_logger
 
 
 T = TypeVar("T")
 Mapper = Callable[[Result], T]
 
-log = logging.getLogger(__name__)
+log = create_logger()
 
 
 def _execute(session: Session, sql: Select) -> Result:
