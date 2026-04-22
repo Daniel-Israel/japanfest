@@ -5,6 +5,17 @@ from app.api import models
 from app.util.enums import MovimentType
 
 
+def create_stock_moviment(
+        session: Session, moviment: models.StockMoviment) -> int:
+    stock_moviment = orm.StockMoviments(
+        product_id=moviment.product_id,
+        order_id=moviment.order_id,
+        quantity=moviment.quantity,
+        type=moviment.type,
+    )
+    return operations.insert_item(session, stock_moviment)
+
+
 def create_order(
     session: Session,
     order = models.NewOrder

@@ -4,6 +4,7 @@ from fastapi import Response
 
 from app.db import orm
 from app.util.enums import PaymentMethod, OrderStatus
+from app.util.types import ORMOBJECT
 
 
 def to_dict(obj):
@@ -127,6 +128,12 @@ def insert_list(session: Session, list_items: list) -> None:
     session.commit()
     return
 
+
+def insert_item(session: Session, item: ORMOBJECT):
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
 
 def alter_order_status(
         session: Session,

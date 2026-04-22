@@ -81,6 +81,14 @@ async def create_order(
     return apiops.create_order_and_items(session, order)
 
 
+@app.post("/stock", tags=["ADM"])
+async def create_stock_moviment(
+    moviment: models.StockMoviment, 
+    session: Session = Depends(get_session)
+    ):
+    return apiops.create_stock_moviment(session, moviment)
+
+
 @app.patch("/order/{id}/{status}", tags=["Tela Cozinha", "Tela Entrega"])
 async def alter_order(
         id: int, 

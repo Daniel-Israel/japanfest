@@ -1,0 +1,25 @@
+meta {
+  name: Create Stock Moviment
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://localhost:8000/order
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "list_items": [
+      {
+        "id": 1,
+        "quantity": 2,
+        "unit_price": 12.30
+      }
+    ],
+    "payment_method": "Cartão de Crédito",
+    "total_price": 18.45
+  }
+}
