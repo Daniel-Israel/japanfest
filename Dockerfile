@@ -1,4 +1,4 @@
-FROM python:3.13-bookworm
+FROM python:3.13-slim-trixie
 
 COPY requirements.txt /requirements.txt
 
@@ -9,10 +9,5 @@ COPY start.sh /start.sh
 RUN chmod -x /start.sh
 
 COPY app /app
-
-RUN mkdir /data \
-    && chmod -R 666 /data
-
-COPY src /src
 
 CMD ["sh", "/start.sh"]
