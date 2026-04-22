@@ -41,6 +41,7 @@ class Connection:
 
 db = Connection()
 
+
 def get_session():
     session = db.get_session()
     try:
