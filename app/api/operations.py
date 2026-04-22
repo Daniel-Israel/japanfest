@@ -47,6 +47,6 @@ def create_order_and_items(session: Session, order = models.NewOrder) -> int:
     order_id = create_order(session, order)
     order_items = prepare_order_items(order_id, order.list_items)
     moviments = prepare_stock_moviments(order_items)
-    operations.create_order_items(session, order_items)
-    operations.create_stock_moviments(session, moviments)
+    operations.insert_list(session, order_items)
+    operations.insert_list(session, moviments)
     return {"id": order_id}

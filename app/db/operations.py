@@ -122,14 +122,8 @@ def create_order(
     return order.id
 
 
-def create_order_items(session: Session, order_items: list[orm.OrdersItems]) -> None:
-    session.add_all(order_items)
-    session.commit()
-    return
-
-
-def create_stock_moviments(session: Session, list_moviments: list[orm.StockMoviments]) -> None:
-    session.add_all(list_moviments)
+def insert_list(session: Session, list_items: list) -> None:
+    session.add_all(list_items)
     session.commit()
     return
 
