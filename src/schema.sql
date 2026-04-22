@@ -11,7 +11,7 @@ CREATE TYPE order_status AS ENUM (
  
 CREATE TYPE payment_method AS ENUM (
     'Cartão de Crédito',
-    'Cartão de Debito',
+    'Cartão de Débito',
     'Dinheiro',
     'Pix'
 );

@@ -9,7 +9,7 @@ class OrderStatus(PyEnum):
  
 class PaymentMethod(PyEnum):
     credit = "Cartão de Crédito"
-    debit = "Cartão de Debito"
+    debit = "Cartão de Débito"
     cash = "Dinheiro"
     pix = "Pix"
  
