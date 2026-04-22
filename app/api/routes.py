@@ -7,7 +7,6 @@ from app.api.api import app
 from app.db.connect import get_session
 from app.db import operations as bdops
 from app.api import operations as apiops
-from app.db import orm
 from app.util import enums
 from app.api import models
 
@@ -63,14 +62,11 @@ async def create_product(
         session: Session = Depends(get_session)
     ):
     file_bytes = await image_data.read()
-    product = orm.Products(
-        name=name, 
-        category=category, 
-        price=price, 
-        priority=priority, 
-        image_data=file_bytes
+    product = apiops.create_product(
+        session, name,  category, 
+        price, priority, file_bytes
     )
-    return bdops.create_product(session, product)
+    return product
 
 
 @app.post("/order", tags=["Tela Venda"])

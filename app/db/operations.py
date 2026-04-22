@@ -7,10 +7,6 @@ from app.util.enums import PaymentMethod, OrderStatus
 from app.util.types import ORMOBJECT
 
 
-def to_dict(obj):
-    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
-
-
 def check_priority(session: Session, list_products: list[int]) -> bool:
     sql = select(orm.Products.priority).where(orm.Products.id.in_(list_products))
     priorities = session.execute(sql).scalars().all()
@@ -99,13 +95,6 @@ def list_orders_items(session: Session) -> list[dict]:
     return [row._asdict() for row in result]
 
 
-def create_product(session: Session, product: orm.Products):
-    session.add(product)
-    session.commit()
-    session.refresh(product)
-    return {"id": product.id, "name": product.name}
-
-
 def create_order(
         session: Session, 
         payment_method: PaymentMethod,
@@ -129,11 +118,12 @@ def insert_list(session: Session, list_items: list[ORMOBJECT]) -> None:
     return
 
 
-def insert_item(session: Session, item: ORMOBJECT):
+def insert_item(session: Session, item: ORMOBJECT) -> ORMOBJECT:
     session.add(item)
     session.commit()
     session.refresh(item)
     return item
+
 
 def alter_order_status(
         session: Session,

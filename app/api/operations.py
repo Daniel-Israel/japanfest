@@ -5,6 +5,28 @@ from app.api import models
 from app.util.enums import MovimentType
 
 
+def to_dict(obj):
+    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+
+
+def create_product(
+        session: Session, name: str, category: str,  
+        price: float, priority: bool, image_data: bytes
+    ):
+    product = operations.insert_item(
+        session,
+        orm.Products(
+            name=name, image_data=image_data, 
+            category=category, price=price, 
+            priority=priority
+        )
+    )
+    product = to_dict(product)
+    product.pop("image_data", None)
+    
+    return product
+
+
 def create_stock_moviment(
         session: Session, moviment: models.StockMoviment) -> int:
     stock_moviment = orm.StockMoviments(
