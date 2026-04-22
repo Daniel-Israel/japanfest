@@ -123,7 +123,7 @@ def create_order(
     return order.id
 
 
-def insert_list(session: Session, list_items: list) -> None:
+def insert_list(session: Session, list_items: list[ORMOBJECT]) -> None:
     session.add_all(list_items)
     session.commit()
     return
