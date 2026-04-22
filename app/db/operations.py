@@ -95,23 +95,6 @@ def list_orders_items(session: Session) -> list[dict]:
     return [row._asdict() for row in result]
 
 
-def create_order(
-        session: Session, 
-        payment_method: PaymentMethod,
-        priority: bool,
-        total_price: float
-    ) -> int:
-    order = orm.Orders(
-        payment_method=payment_method.value,
-        priority=priority,
-        total_price=total_price
-    )
-    session.add(order)
-    session.commit()
-    session.refresh(order)
-    return order.id
-
-
 def insert_list(session: Session, list_items: list[ORMOBJECT]) -> list[ORMOBJECT]:
     session.add_all(list_items)
     session.commit()

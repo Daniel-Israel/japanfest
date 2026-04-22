@@ -45,9 +45,16 @@ def create_order(
     list_ids = []
     for item in order.list_items:
         list_ids.append(item.id)
+
     priority = operations.check_priority(session, list_ids)
-    return operations.create_order(
-        session, order.payment_method, priority, order.total_price)
+
+    order = orm.Orders(
+        payment_method=order.payment_method.value,
+        priority=priority,
+        total_price=order.total_price
+    )
+
+    return operations.insert_item(session, order).id
     
 
 def prepare_order_items(
