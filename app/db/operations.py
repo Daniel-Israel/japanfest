@@ -129,6 +129,12 @@ def create_order_items(session: Session, order_items: list[orm.OrdersItems]) -> 
     return
 
 
+def create_stock_moviments(session: Session, list_moviments: list[orm.StockMoviments]) -> None:
+    session.add_all(list_moviments)
+    session.commit()
+    return
+
+
 def alter_order_status(
         session: Session,
         id: int,
