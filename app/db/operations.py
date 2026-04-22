@@ -19,6 +19,17 @@ def check_priority(session: Session, list_products: list[int]) -> bool:
         return True
 
 
+def list_categories(session: Session) -> dict:
+    categories = []
+    sql = select(
+        orm.Products.category
+    ).distinct()
+    result = session.execute(sql).all()
+    for row in result:
+        categories.append(row[0])
+    return {"categories": categories}
+
+
 def list_products(session: Session) -> dict:
     sql = select(
         orm.Products.name,

@@ -23,6 +23,11 @@ async def redirecionar_para_docs():
     )
 
 
+@app.get("/products/categories", tags=["Tela Venda"])
+async def list_categories(session: Session = Depends(get_session)):
+    return bdops.list_categories(session)
+
+
 @app.get("/products", tags=["Tela Venda"])
 async def list_products(session: Session = Depends(get_session)):
     return bdops.list_products(session)
