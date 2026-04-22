@@ -89,4 +89,3 @@ async def alter_order(
         session: Session = Depends(get_session)
     ):
     return updates.alter_order_status(session, id, status)
-

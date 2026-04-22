@@ -39,6 +39,7 @@ class Connection:
     def get_session(self) -> Session:
         return self.SessionFactory()
 
+
 db = Connection()
 
 

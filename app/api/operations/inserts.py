@@ -7,7 +7,6 @@ from app.util.enums import MovimentType
 from app.util.conversions import to_dict
 
 
-
 def create_product(
         session: Session, name: str, category: str,  
         price: float, priority: bool, image_data: bytes
