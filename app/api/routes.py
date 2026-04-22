@@ -15,7 +15,7 @@ from app.api import models
 logger = create_logger()
 
 
-@app.get("/")
+@app.get("/", tags=["ADM"])
 async def redirecionar_para_docs():
     logger.error("erro")
     return RedirectResponse(
@@ -23,32 +23,32 @@ async def redirecionar_para_docs():
     )
 
 
-@app.get("/products")
+@app.get("/products", tags=["Tela Venda"])
 async def list_products(session: Session = Depends(get_session)):
     return bdops.list_products(session)
 
 
-@app.get("/product/image/{id}")
+@app.get("/product/image/{id}", tags=["Tela Venda"])
 async def product_image(id: int, session: Session = Depends(get_session)):
     return bdops.list_product_image(session, int(id))
 
 
-@app.get("/product/info/{id}")
+@app.get("/product/info/{id}", tags=["ADM"])
 async def product_info(id: int, session: Session = Depends(get_session)):
     return bdops.list_product_info(session, id)
 
 
-@app.get("/orders")
+@app.get("/orders", tags=["Tela Clientes"])
 async def list_orders(session: Session = Depends(get_session)):
     return bdops.list_orders(session)
 
 
-@app.get("/orders/items")
+@app.get("/orders/items", tags=["Tela Cozinha"])
 async def list_orders_and_items(session: Session = Depends(get_session)):
     return bdops.list_orders_items(session)
 
 
-@app.post("/product")
+@app.post("/product", tags=["ADM"])
 async def create_product(
         name: str = Form(...),
         category: str = Form(...),
@@ -68,7 +68,7 @@ async def create_product(
     return bdops.create_product(session, product)
 
 
-@app.post("/order")
+@app.post("/order", tags=["Tela Venda"])
 async def create_order(
     order: models.NewOrder,
     session: Session = Depends(get_session)
@@ -76,7 +76,7 @@ async def create_order(
     return apiops.create_order_and_items(session, order)
 
 
-@app.patch("/order/{id}/{status}")
+@app.patch("/order/{id}/{status}", tags=["Tela Cozinha", "Tela Entrega"])
 async def alter_order(
         id: int, 
         status: enums.OrderStatus,
