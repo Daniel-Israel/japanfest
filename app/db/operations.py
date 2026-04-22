@@ -1,9 +1,9 @@
-from sqlalchemy import select, update, func
+from sqlalchemy import select, update, func, Select, Sequence, RowMapping
 from sqlalchemy.orm import Session
 from fastapi import Response
 
 from app.db import orm
-from app.util.enums import PaymentMethod, OrderStatus
+from app.util.enums import OrderStatus
 from app.util.types import ORMOBJECT
 
 
@@ -21,7 +21,7 @@ def list_categories(session: Session) -> dict:
     sql = select(
         orm.Products.category
     ).distinct()
-    result = session.execute(sql).all()
+    result = select_many(session, sql)
     for row in result:
         categories.append(row[0])
     return {"categories": categories}
@@ -34,7 +34,7 @@ def list_products(session: Session) -> dict:
         orm.Products.category,
         orm.Products.price
     )
-    result = session.execute(sql).all()
+    result = select_many(session, sql)
     return [
         {"name": name, "id": id, "category": category, "price": price}
         for name, id, category, price in result
@@ -58,7 +58,7 @@ def list_product_info(session: Session, id: int) -> dict:
         orm.Products.price,
         orm.Products.priority,
     ).where(orm.Products.id == id)
-    result = session.execute(sql).mappings().first()
+    result = select_one(session, sql)
     return dict(result) if result else None
 
 
@@ -68,7 +68,7 @@ def list_orders(session: Session) -> dict:
         orm.Orders.priority,
         orm.Orders.status
     ).where(orm.Orders.status != OrderStatus.delivered.value)
-    result = session.execute(sql).all()
+    result = select_many(session, sql)
     return [
         {"id": id, "priority": priority ,"status": status}
         for id, priority, status in result
@@ -91,7 +91,7 @@ def list_orders_items(session: Session) -> list[dict]:
             orm.Orders.status,
         )
     )
-    result = session.execute(sql).all()
+    result = select_many(session, sql)
     return [row._asdict() for row in result]
 
 
@@ -108,6 +108,14 @@ def insert_item(session: Session, item: ORMOBJECT) -> ORMOBJECT:
     session.commit()
     session.refresh(item)
     return item
+
+
+def select_one(session: Session, sql: Select) -> RowMapping | None:
+    return session.execute(sql).mappings().first()
+
+
+def select_many(session: Session, sql: Select) -> Sequence:
+    return session.execute(sql).all()
 
 
 def alter_order_status(
