@@ -2,11 +2,10 @@ from sqlalchemy.orm import Session
 
 from app.db import orm, operations
 from app.api import models
+from app.api.operations import selects
 from app.util.enums import MovimentType
+from app.util.conversions import to_dict
 
-
-def to_dict(obj):
-    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
 def create_product(
@@ -46,7 +45,7 @@ def create_order(
     for item in order.list_items:
         list_ids.append(item.id)
 
-    priority = operations.check_priority(session, list_ids)
+    priority = selects.check_priority(session, list_ids)
 
     order = orm.Orders(
         payment_method=order.payment_method.value,
