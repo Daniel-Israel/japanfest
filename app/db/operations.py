@@ -19,7 +19,7 @@ log = create_logger()
 
 def _execute(session: Session, sql: Select) -> Result:
     """Run the statement and return the raw Result."""
-    log.debug("Executing %s", sql)
+    log.info("Executing %s", sql)
     return session.execute(sql)
 
 
