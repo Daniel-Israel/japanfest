@@ -16,7 +16,7 @@ docker compose up -d
 
 1. Crie a venv python
 ```
-python3.13 -m venv venv
+python3.13 -m venv venv && source venv/bin/activate
 ```
 2. Instale as dependências do backend
 ```
