@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 
 from app.db import orm, operations
 from app.api import models
-from app.util import enums
 
 
 def create_order(

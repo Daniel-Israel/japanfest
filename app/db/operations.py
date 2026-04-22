@@ -1,4 +1,3 @@
-import pandas as pd
 from sqlalchemy import select, update, func
 from sqlalchemy.orm import Session
 from fastapi import Response
@@ -20,7 +19,7 @@ def check_priority(session: Session, list_products: list[int]) -> bool:
         return True
 
 
-def list_products(session: Session) -> pd.DataFrame:
+def list_products(session: Session) -> dict:
     sql = select(
         orm.Products.name,
         orm.Products.id,
