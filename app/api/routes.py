@@ -1,8 +1,12 @@
-from fastapi import Depends, UploadFile, File, Form
-from fastapi.responses import RedirectResponse
+import json
+import asyncio
+
+from fastapi import Depends, UploadFile, File, Form, Request
+from fastapi.responses import RedirectResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.config.log import create_logger
+from app.config.sse import sse_manager
 from app.api.api import app
 from app.db.connect import get_session
 from app.api.operations import selects, inserts, updates
@@ -13,11 +17,47 @@ from app.api import models
 log = create_logger()
 
 
+async def event_stream(request: Request, channel: str):
+    q = await sse_manager.subscribe(channel)
+    try:
+        while True:
+            if await request.is_disconnected():
+                break
+            try:
+                data = await asyncio.wait_for(q.get(), timeout=15)
+                yield f"data: {data}\n\n"
+            except asyncio.TimeoutError:
+                yield ": keepalive\n\n"
+    finally:
+        sse_manager.unsubscribe(channel, q)
+
+
 @app.get("/", tags=["ADM"])
 async def redirecionar_para_docs():
     return RedirectResponse(
         url=app.docs_url, status_code=307
     )
+
+
+@app.get("/events/orders", tags=["Stream", "Tela Entrega"])
+async def orders_events(request: Request):
+    """For the client-facing screen and the delivery tablet."""
+    return StreamingResponse(
+        event_stream(request, "orders"),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@app.get("/events/kitchen", tags=["Stream", "Tela Cozinha"])
+async def kitchen_events(request: Request):
+    """For the kitchen screen."""
+    return StreamingResponse(
+        event_stream(request, "kitchen"),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
 
 
 @app.get("/products/categories", tags=["Tela Venda"])
@@ -93,4 +133,12 @@ async def alter_order(
         status: enums.OrderStatus,
         session: Session = Depends(get_session)
     ):
-    return updates.alter_order_status(session, id, status)
+    updates.alter_order_status(session, id, status)
+
+    payload = json.dumps({"id": id, "status": status.value})
+
+    await sse_manager.publish("orders", payload)
+
+    await sse_manager.publish("kitchen", payload)
+
+    return 
