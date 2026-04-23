@@ -39,7 +39,7 @@ async def redirecionar_para_docs():
     )
 
 
-@app.get("/events/orders", tags=["Stream", "Tela Entrega"])
+@app.get("/events/orders", tags=["Stream", "Tela Entrega", "Tela Clientes"])
 async def orders_events(request: Request):
     """For the client-facing screen and the delivery tablet."""
     return StreamingResponse(
@@ -47,17 +47,6 @@ async def orders_events(request: Request):
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
-
-
-@app.get("/events/kitchen", tags=["Stream", "Tela Cozinha"])
-async def kitchen_events(request: Request):
-    """For the kitchen screen."""
-    return StreamingResponse(
-        event_stream(request, "kitchen"),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
-    )
-
 
 
 @app.get("/products/categories", tags=["Tela Venda"])
@@ -138,7 +127,5 @@ async def alter_order(
     payload = json.dumps({"id": id, "status": status.value})
 
     await sse_manager.publish("orders", payload)
-
-    await sse_manager.publish("kitchen", payload)
 
     return 
