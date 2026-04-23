@@ -105,7 +105,12 @@ async def create_order(
     order: models.NewOrder,
     session: Session = Depends(get_session)
 ):
-    return inserts.create_order_and_items(session, order)
+    
+    id = inserts.create_order_and_items(session, order)
+    payload = json.dumps({"id": id, "status": enums.OrderStatus.queue.value})
+
+    await sse_manager.publish("orders", payload)
+    return {"id": id}
 
 
 @app.post("/stock", tags=["ADM"])

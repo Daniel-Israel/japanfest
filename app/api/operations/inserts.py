@@ -87,4 +87,4 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     moviments = prepare_stock_moviments(order_items)
     operations._do_insert(session, order_items)
     operations._do_insert(session, moviments)
-    return {"id": order_id}
+    return order_id
