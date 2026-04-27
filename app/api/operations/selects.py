@@ -32,7 +32,7 @@ def list_products(session: Session) -> dict:
         orm.Products.id,
         orm.Products.category,
         orm.Products.price
-    ).order_by(orm.Products.id)
+    ).order_by(orm.Products.name)
     result = operations.select_many(session, sql)
     return [
         {"name": name, "id": id, "category": category, "price": price}
