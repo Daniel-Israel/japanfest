@@ -72,7 +72,11 @@ def list_orders(session: Session) -> list[dict]:
             orm.Orders.priority,
             orm.Orders.status,
         )
-        .where(orm.Orders.status != OrderStatus.delivered.value)
+        .where(
+            orm.Orders.status != OrderStatus.delivered.value
+            and
+            orm.Orders.status != OrderStatus.canceled.value
+            )
         .order_by(orm.Orders.id)
     )
     rows = operations.select_many(session, sql)
