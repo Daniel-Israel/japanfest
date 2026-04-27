@@ -49,7 +49,7 @@ def list_product_image(session: Session, id: int) -> Response:
     )
 
 
-def list_product_info(session: Session, id_: int) -> dict | None:
+def list_product_info(session: Session, id: int) -> dict | None:
     sql = (
         select(
             orm.Products.id,
@@ -58,7 +58,7 @@ def list_product_info(session: Session, id_: int) -> dict | None:
             orm.Products.price,
             orm.Products.priority,
         )
-        .where(orm.Products.id == id_)
+        .where(orm.Products.id == id)
         .order_by(orm.Products.id)
     )
     result = operations.select_one(session, sql)
