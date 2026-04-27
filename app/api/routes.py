@@ -34,14 +34,14 @@ async def event_stream(request: Request, channel: str):
 
 
 @app.get("/", tags=["ADM"])
-async def redirecionar_para_docs():
+async def redirect_docs():
     return RedirectResponse(
         url=app.docs_url, status_code=307
     )
 
 
 @app.get("/events/orders", tags=["Stream", "Tela Entrega", "Tela Clientes"])
-async def orders_events(request: Request):
+async def list_orders_events(request: Request):
     """For the client-facing screen and the delivery tablet."""
     return StreamingResponse(
         event_stream(request, "orders"),
@@ -50,43 +50,8 @@ async def orders_events(request: Request):
     )
 
 
-@app.get("/products/categories", tags=["Tela Venda"])
-async def list_categories(session: Session = Depends(get_session)):
-    return selects.list_categories(session)
-
-
-@app.get("/products", tags=["Tela Venda"])
-async def list_products(session: Session = Depends(get_session)):
-    return selects.list_products(session)
-
-
-@app.get("/product/image/{id}", tags=["Tela Venda"])
-async def product_image(id: int, session: Session = Depends(get_session)):
-    return selects.list_product_image(session, int(id))
-
-
-@app.get("/orders", tags=["Tela Clientes"])
-async def list_orders(session: Session = Depends(get_session)):
-    return selects.list_orders(session)
-
-
-@app.get("/orders/items", tags=["Tela Cozinha"])
-async def list_orders_and_items(session: Session = Depends(get_session)):
-    return selects.list_orders_items(session)
-
-
-@app.get("/stocks", tags=["ADM"])
-async def list_stock(session: Session = Depends(get_session)):
-    return selects.list_stock(session)
-
-
-@app.get("/orders/new", tags=["ADM"])
-async def list_new_orders_and_items(session: Session = Depends(get_session)):
-    return selects.list_new_order_items(session)
-
-
-@app.post("/product", tags=["ADM"])
-async def create_product(
+@app.post("/products", tags=["ADM"])
+async def create_products(
         name: str = Form(...),
         category: str = Form(...),
         price: float = Form(...),
@@ -101,50 +66,67 @@ async def create_product(
     )
 
 
-@app.post("/order", tags=["Tela Venda"])
-async def create_order(
+@app.get("/products", tags=["Tela Venda"])
+async def list_products(session: Session = Depends(get_session)):
+    return selects.list_products(session)
+
+
+@app.get("/products/{id}/image", tags=["Tela Venda"])
+async def list_products_images(id: int, session: Session = Depends(get_session)):
+    return selects.list_product_image(session, int(id))
+
+
+@app.get("/products/categories", tags=["Tela Venda"])
+async def list_categories(session: Session = Depends(get_session)):
+    return selects.list_categories(session)
+
+
+@app.post("/orders", tags=["Tela Venda"])
+async def create_orders(
     order: models.NewOrder,
     session: Session = Depends(get_session)
 ):
     
     id = inserts.create_order_and_items(session, order)
     payload = json.dumps({"id": id, "status": enums.OrderStatus.queue.value})
-
     await sse_manager.publish("orders", payload)
     return {"id": id}
 
 
-@app.post("/stock", tags=["ADM"])
-async def create_stock(
+@app.get("/orders", tags=["Tela Clientes"])
+async def list_orders(session: Session = Depends(get_session)):
+    return selects.list_orders(session)
+
+
+@app.patch("/orders/{id}/{status}", tags=["Tela Cozinha", "Tela Entrega"])
+async def alter_orders_status(
+        id: int, 
+        status: enums.OrderStatus,
+        session: Session = Depends(get_session)
+    ):
+    updates.alter_order_status(session, id, status)
+    
+    payload = json.dumps({"id": id, "status": status.value})
+    await sse_manager.publish("orders", payload)
+    return 
+
+
+@app.get("/stocks", tags=["ADM"])
+async def list_stocks(session: Session = Depends(get_session)):
+    return selects.list_stock(session)
+
+
+@app.post("/stocks", tags=["ADM"])
+async def create_stocks(
     stocks: List[models.Stock],
     session: Session = Depends(get_session)
 ):
     return inserts.create_stock(session, stocks)
 
 
-@app.post("/stock/movement", tags=["ADM"])
-async def create_stock_movement(
+@app.post("/stocks/movements", tags=["ADM"])
+async def create_stocks_movements(
     movement: models.StockMovement, 
     session: Session = Depends(get_session)
     ):
     return inserts.create_stock_movement(session, movement)
-
-
-@app.patch("/order/cancel/{id}", tags=["ADM"])
-async def cancel_order(id: int, session: Session = Depends(get_session)):
-    return updates.cancel_order(session, id)
-
-
-@app.patch("/order/{id}/{status}", tags=["Tela Cozinha", "Tela Entrega"])
-async def alter_order(
-        id: int, 
-        status: enums.OrderStatus,
-        session: Session = Depends(get_session)
-    ):
-    updates.alter_order_status(session, id, status)
-
-    payload = json.dumps({"id": id, "status": status.value})
-
-    await sse_manager.publish("orders", payload)
-
-    return 
