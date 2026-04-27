@@ -19,7 +19,7 @@ def list_categories(session: Session) -> dict:
     categories = []
     sql = select(
         orm.Products.category
-    ).distinct()
+    ).distinct().order_by(orm.Products.category)
     result = operations.select_many(session, sql)
     for row in result:
         categories.append(row[0])
