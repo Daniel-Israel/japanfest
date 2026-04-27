@@ -122,7 +122,10 @@ def list_orders_items(session: Session) -> list[dict]:
 
 
 def list_stock(session: Session) -> list[dict]:
-    sql = select(orm.Stocks.product_id, orm.Stocks.quantity)
+    sql = (
+        select(orm.Stocks.product_id, orm.Stocks.quantity)
+        .order_by(orm.Stocks.product_id)
+    )
     result = operations.select_many(session, sql)
     return [
         {"product_id": product_id, "quantity": quantity}
