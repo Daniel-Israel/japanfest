@@ -7,17 +7,7 @@ from app.db.operations import _do_insert
 from app.api.operations.selects import list_order_items
 
 
-def alter_order_status(
-        session: Session,
-        id: int,
-        new_status: OrderStatus
-    ) -> None:
-    sql = update(orm.Orders).where(orm.Orders.id == id).values(status=new_status.value)
-    session.execute(sql)
-    return
-
-
-def cancel_order(session: Session, id: int) -> None:
+def cancel_movement(session: Session, id: int) -> None:
     stock_movements = []
 
     order = list_order_items(session, id)
@@ -30,5 +20,16 @@ def cancel_order(session: Session, id: int) -> None:
             type=MovementType.fix.value
         ))
     _do_insert(session, stock_movements)
-    alter_order_status(session, id, OrderStatus.canceled)
+    return
+
+
+def alter_order_status(
+    session: Session, 
+    id: int,
+    new_status: OrderStatus
+) -> None:
+    if new_status == OrderStatus.canceled:
+        cancel_movement(session, id)
+    sql = update(orm.Orders).where(orm.Orders.id == id).values(status=new_status.value)
+    session.execute(sql)
     return
