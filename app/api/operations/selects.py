@@ -74,22 +74,6 @@ def list_product_image(session: Session, id: int) -> Response:
     )
 
 
-def list_product_info(session: Session, id: int) -> dict | None:
-    sql = (
-        select(
-            orm.Products.id,
-            orm.Products.name,
-            orm.Products.category,
-            orm.Products.price,
-            orm.Products.priority,
-        )
-        .where(orm.Products.id == id)
-        .order_by(orm.Products.id)
-    )
-    result = operations.select_one(session, sql)
-    return dict(result) if result else None
-
-
 def list_orders(session: Session) -> list[dict]:
     sql = (
         select(

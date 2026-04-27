@@ -65,11 +65,6 @@ async def product_image(id: int, session: Session = Depends(get_session)):
     return selects.list_product_image(session, int(id))
 
 
-@app.get("/product/info/{id}", tags=["ADM"])
-async def product_info(id: int, session: Session = Depends(get_session)):
-    return selects.list_product_info(session, id)
-
-
 @app.get("/orders", tags=["Tela Clientes"])
 async def list_orders(session: Session = Depends(get_session)):
     return selects.list_orders(session)
