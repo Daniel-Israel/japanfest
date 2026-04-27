@@ -85,6 +85,11 @@ async def list_stock(session: Session = Depends(get_session)):
     return selects.list_stock(session)
 
 
+@app.get("/orders/new", tags=["ADM"])
+async def list_new_orders_and_items(session: Session = Depends(get_session)):
+    return selects.list_new_order_items(session)
+
+
 @app.post("/product", tags=["ADM"])
 async def create_product(
         name: str = Form(...),

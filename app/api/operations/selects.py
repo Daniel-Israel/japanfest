@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import Select, select, desc, func
 from sqlalchemy.orm import Session
 from fastapi import Response
 
@@ -13,6 +13,31 @@ def check_priority(session: Session, list_products: list[int]) -> bool:
         return False
     else:
         return True
+
+
+def create_sql_orders_items(order_by) -> Select:
+    sql = (
+        select(
+            orm.Orders.id,
+            orm.Orders.priority,
+            orm.Orders.status,
+            func.json_agg(
+                func.json_build_object(
+                    "name", orm.Products.name,
+                    "quantity",orm.OrdersItems.quantity,
+                )
+            ).label("products")
+        )
+        .join(orm.OrdersItems, orm.OrdersItems.order_id == orm.Orders.id)
+        .join(orm.Products, orm.Products.id == orm.OrdersItems.product_id)
+        .group_by(
+            orm.Orders.id,
+            orm.Orders.priority,
+            orm.Orders.status,
+        )
+        .order_by(order_by)
+    )
+    return sql
 
 
 def list_categories(session: Session) -> dict:
@@ -100,28 +125,18 @@ def list_order_items(session: Session, id: int) -> list[dict]:
 
 
 def list_orders_items(session: Session) -> list[dict]:
-    sql = (
-        select(
-            orm.Orders.id,
-            orm.Orders.priority,
-            orm.Orders.status,
-            func.json_agg(
-                func.json_build_object(
-                    "name", orm.Products.name,
-                    "quantity",orm.OrdersItems.quantity,
-                )
-            ).label("products")
-        )
-        .join(orm.OrdersItems, orm.OrdersItems.order_id == orm.Orders.id)
-        .join(orm.Products, orm.Products.id == orm.OrdersItems.product_id)
-        .group_by(
-            orm.Orders.id,
-            orm.Orders.priority,
-            orm.Orders.status,
-        )
-        .order_by(orm.Orders.id)
+    result = operations.select_many(
+        session, 
+        create_sql_orders_items(orm.Orders.id)
     )
-    result = operations.select_many(session, sql)
+    return [row._asdict() for row in result]
+
+
+def list_new_order_items(session: Session) -> list[dict]:
+    result = operations.select_many(
+        session, 
+        create_sql_orders_items(desc(orm.Orders.updated_at))
+    )
     return [row._asdict() for row in result]
 
 
