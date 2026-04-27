@@ -88,7 +88,12 @@ def list_orders_items(session: Session) -> list[dict]:
             orm.Orders.id,
             orm.Orders.priority,
             orm.Orders.status,
-            func.array_agg(orm.Products.name).label("products")
+            func.json_agg(
+                func.json_build_object(
+                    "name", orm.Products.name,
+                    "quantity",orm.OrdersItems.quantity,
+                )
+            ).label("products")
         )
         .join(orm.OrdersItems, orm.OrdersItems.order_id == orm.Orders.id)
         .join(orm.Products, orm.Products.id == orm.OrdersItems.product_id)
