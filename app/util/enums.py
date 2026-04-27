@@ -5,6 +5,7 @@ class OrderStatus(PyEnum):
     queue = "Fila"
     ready = "Pronto"
     delivered = "Entregue"
+    canceled = "Cancelado"
  
  
 class PaymentMethod(PyEnum):

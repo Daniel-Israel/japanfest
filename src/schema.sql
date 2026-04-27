@@ -6,7 +6,8 @@
 CREATE TYPE order_status AS ENUM (
     'Fila',
     'Pronto',
-    'Entregue'
+    'Entregue',
+    'Cancelado'
 );
  
 CREATE TYPE payment_method AS ENUM (
