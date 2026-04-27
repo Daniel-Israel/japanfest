@@ -40,7 +40,10 @@ async def redirect_docs():
     )
 
 
-@app.get("/events/orders", tags=["Stream", "Tela Entrega", "Tela Clientes"])
+@app.get(
+    "/events/orders", 
+    tags=["Stream", "Tela Cozinha", "Tela Clientes", "Tela Entrega"]
+)
 async def list_orders_events(request: Request):
     """For the client-facing screen and the delivery tablet."""
     return StreamingResponse(
@@ -93,12 +96,15 @@ async def create_orders(
     return {"id": id}
 
 
-@app.get("/orders", tags=["Tela Clientes"])
+@app.get("/orders", tags=["Tela Cozinha", "Tela Clientes", "Tela Entrega"])
 async def list_orders(session: Session = Depends(get_session)):
     return selects.list_orders(session)
 
 
-@app.patch("/orders/{id}/{status}", tags=["Tela Cozinha", "Tela Entrega"])
+@app.patch(
+    "/orders/{id}/{status}", 
+    tags=["Tela Cozinha", "Tela Entrega", "ADM"]
+)
 async def alter_orders_status(
         id: int, 
         status: enums.OrderStatus,
@@ -111,7 +117,7 @@ async def alter_orders_status(
     return 
 
 
-@app.get("/stocks", tags=["ADM"])
+@app.get("/stocks", tags=["Dashboard", "ADM"])
 async def list_stocks(session: Session = Depends(get_session)):
     return selects.list_stock(session)
 
