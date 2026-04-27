@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.db import orm, operations
 from app.api import models
 from app.api.operations import selects
-from app.util.enums import MovimentType
+from app.util.enums import MovementType
 from app.util.conversions import to_dict
 
 
@@ -27,15 +27,15 @@ def create_product(
     return product
 
 
-def create_stock_moviment(
-        session: Session, moviment: models.StockMoviment) -> int:
-    stock_moviment = orm.StockMoviments(
-        product_id=moviment.product_id,
-        order_id=moviment.order_id,
-        quantity=moviment.quantity,
-        type=moviment.type,
+def create_stock_movement(
+        session: Session, movement: models.StockMovement) -> int:
+    stock_movement = orm.StockMovements(
+        product_id=movement.product_id,
+        order_id=movement.order_id,
+        quantity=movement.quantity,
+        type=movement.type,
     )
-    return operations._do_insert(session, [stock_moviment])
+    return operations._do_insert(session, [stock_movement])
 
 
 def create_order(
@@ -70,25 +70,25 @@ def prepare_order_items(
     return order_items
 
 
-def prepare_stock_moviments(
-        list_items: list[orm.OrdersItems]) -> list[orm.StockMoviments]:
-    list_moviments = []
+def prepare_stock_movements(
+        list_items: list[orm.OrdersItems]) -> list[orm.StockMovements]:
+    list_movements = []
     for item in list_items:
-        list_moviments.append(orm.StockMoviments(
+        list_movements.append(orm.StockMovements(
             product_id=item.product_id,
             order_id=item.order_id,
             quantity=-(item.quantity),
-            type=MovimentType.sale.value
+            type=MovementType.sale.value
         ))
-    return list_moviments
+    return list_movements
 
 
 def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     order_id = create_order(session, order)
     order_items = prepare_order_items(order_id, order.list_items)
-    moviments = prepare_stock_moviments(order_items)
+    movements = prepare_stock_movements(order_items)
     operations._do_insert(session, order_items)
-    operations._do_insert(session, moviments)
+    operations._do_insert(session, movements)
     return order_id
 
 

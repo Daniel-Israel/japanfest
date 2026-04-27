@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-from app.util.enums import PaymentMethod, MovimentType
+from app.util.enums import PaymentMethod, MovementType
 
 
 class Item(BaseModel):
@@ -16,11 +16,11 @@ class NewOrder(BaseModel):
     total_price: float
 
 
-class StockMoviment(BaseModel):
+class StockMovement(BaseModel):
     product_id: int
     order_id: Optional[int] = None
     quantity: int
-    type: MovimentType
+    type: MovementType
 
 class Stock(BaseModel):
     product_id: int

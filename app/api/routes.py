@@ -122,12 +122,12 @@ async def create_stock(
     return inserts.create_stock(session, stocks)
 
 
-@app.post("/stock/moviment", tags=["ADM"])
-async def create_stock_moviment(
-    moviment: models.StockMoviment, 
+@app.post("/stock/movement", tags=["ADM"])
+async def create_stock_movement(
+    movement: models.StockMovement, 
     session: Session = Depends(get_session)
     ):
-    return inserts.create_stock_moviment(session, moviment)
+    return inserts.create_stock_movement(session, movement)
 
 
 @app.patch("/order/cancel/{id}", tags=["ADM"])

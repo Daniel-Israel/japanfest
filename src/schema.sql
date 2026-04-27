@@ -17,7 +17,7 @@ CREATE TYPE payment_method AS ENUM (
     'Pix'
 );
  
-CREATE TYPE moviment_type AS ENUM (
+CREATE TYPE movement_type AS ENUM (
     'Venda',
     'Entrada de Estoque',
     'Ajuste'
@@ -86,21 +86,21 @@ CREATE TABLE stock (
 );
  
 -- ---------------------------------------------------------------------------
--- stock_moviments
+-- stock_movements
 -- ---------------------------------------------------------------------------
  
-CREATE TABLE stock_moviments (
+CREATE TABLE stock_movements (
     id          BIGSERIAL       PRIMARY KEY,
     product_id  BIGINT          NOT NULL REFERENCES products(id),
     order_id    BIGINT                   REFERENCES orders(id),
     quantity    INTEGER         NOT NULL,
-    type        moviment_type   NOT NULL,
+    type        movement_type   NOT NULL,
     created_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
  
--- Trigger to update stock.quantity automatically on every stock_moviments INSERT.
--- quantity in stock_moviments is signed: positive = stock in, negative = stock out.
-CREATE OR REPLACE FUNCTION update_stock_on_moviment()
+-- Trigger to update stock.quantity automatically on every stock_movements INSERT.
+-- quantity in stock_movements is signed: positive = stock in, negative = stock out.
+CREATE OR REPLACE FUNCTION update_stock_on_movement()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE stock
@@ -111,7 +111,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
  
-CREATE TRIGGER trg_stock_moviments_update_stock
-AFTER INSERT ON stock_moviments
+CREATE TRIGGER trg_stock_movements_update_stock
+AFTER INSERT ON stock_movements
 FOR EACH ROW
-EXECUTE FUNCTION update_stock_on_moviment();
+EXECUTE FUNCTION update_stock_on_movement();

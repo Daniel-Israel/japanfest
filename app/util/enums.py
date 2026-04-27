@@ -15,7 +15,7 @@ class PaymentMethod(PyEnum):
     pix = "Pix"
  
  
-class MovimentType(PyEnum):
+class MovementType(PyEnum):
     sale = "Venda"
     restock = "Entrada de Estoque"
     fix = "Ajuste"

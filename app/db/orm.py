@@ -89,8 +89,8 @@ class Stocks(Base):
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
  
  
-class StockMoviments(Base):
-    __tablename__ = "stock_moviments"
+class StockMovements(Base):
+    __tablename__ = "stock_movements"
  
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     product_id: Mapped[int] = mapped_column(
@@ -100,10 +100,10 @@ class StockMoviments(Base):
         BigInteger, ForeignKey("orders.id"), nullable=True
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    type: Mapped[enums.MovimentType] = mapped_column(
+    type: Mapped[enums.MovementType] = mapped_column(
         Enum(
-                enums.MovimentType, 
-                name="moviment_type",
+                enums.MovementType, 
+                name="movement_type",
                 values_callable=lambda e: [i.value for i in e]
             ), 
             nullable=False
