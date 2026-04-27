@@ -85,7 +85,7 @@ def list_orders(session: Session) -> list[dict]:
 def list_order_items(session: Session, id: int) -> list[dict]:
     sql = (
         select(
-            orm.Products.name,
+            orm.Products.id,
             orm.OrdersItems.quantity,
         )
         .join(orm.OrdersItems, orm.OrdersItems.product_id == orm.Products.id)

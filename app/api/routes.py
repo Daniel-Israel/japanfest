@@ -130,6 +130,11 @@ async def create_stock_moviment(
     return inserts.create_stock_moviment(session, moviment)
 
 
+@app.patch("/order/cancel/{id}", tags=["ADM"])
+async def cancel_order(id: int, session: Session = Depends(get_session)):
+    return updates.cancel_order(session, id)
+
+
 @app.patch("/order/{id}/{status}", tags=["Tela Cozinha", "Tela Entrega"])
 async def alter_order(
         id: int, 
