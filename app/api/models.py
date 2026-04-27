@@ -21,3 +21,7 @@ class StockMoviment(BaseModel):
     order_id: Optional[int] = None
     quantity: int
     type: MovimentType
+
+class Stock(BaseModel):
+    product_id: int
+    quantity: int

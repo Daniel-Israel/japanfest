@@ -1,5 +1,6 @@
 import json
 import asyncio
+from typing import List
 
 from fastapi import Depends, UploadFile, File, Form, Request
 from fastapi.responses import RedirectResponse, StreamingResponse
@@ -111,6 +112,14 @@ async def create_order(
 
     await sse_manager.publish("orders", payload)
     return {"id": id}
+
+
+@app.post("/stock", tags=["ADM"])
+async def create_stock(
+    stocks: List[models.Stock],
+    session: Session = Depends(get_session)
+):
+    return inserts.create_stock(session, stocks)
 
 
 @app.post("/stock/moviment", tags=["ADM"])
