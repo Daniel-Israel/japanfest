@@ -113,7 +113,7 @@ async def create_order(
     return {"id": id}
 
 
-@app.post("/stock", tags=["ADM"])
+@app.post("/stock/moviment", tags=["ADM"])
 async def create_stock_moviment(
     moviment: models.StockMoviment, 
     session: Session = Depends(get_session)
