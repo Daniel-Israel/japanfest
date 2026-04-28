@@ -1,8 +1,8 @@
 import json
 import asyncio
-from typing import List
+from typing import List, Optional
 
-from fastapi import Depends, UploadFile, File, Form, Request
+from fastapi import Depends, UploadFile, File, Form, Request, Query
 from fastapi.responses import RedirectResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
@@ -97,8 +97,22 @@ async def create_orders(
 
 
 @app.get("/orders", tags=["Tela Cozinha", "Tela Clientes", "Tela Entrega"])
-async def list_orders(session: Session = Depends(get_session)):
-    return selects.list_orders(session)
+async def list_orders(
+    id: int = Query(None),
+    include: Optional[enums.IncludeOptions] = Query(None),
+    sort: Optional[enums.SortOptions] = Query("updated_at"),
+    status: Optional[list[enums.OrderStatus]] = Query(None),
+    order: Optional[enums.SortOrderOptions] = Query(None),
+    session: Session = Depends(get_session)
+):
+    filters = {
+        "id": id,
+        "include": include,
+        "sort": sort,
+        "list_status": status,
+        "order": order
+    }
+    return selects.list_orders(session, filters)
 
 
 @app.patch(

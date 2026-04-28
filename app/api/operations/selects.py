@@ -1,10 +1,9 @@
-from sqlalchemy import Select, select, desc, func
+from sqlalchemy import Select, select, func
 from sqlalchemy.orm import Session
 from fastapi import Response
 
 from app.db import orm, operations
-from app.util.enums import OrderStatus
-
+from app.util import enums
 
 def check_priority(session: Session, list_products: list[int]) -> bool:
     sql = select(orm.Products.priority).where(orm.Products.id.in_(list_products))
@@ -15,28 +14,53 @@ def check_priority(session: Session, list_products: list[int]) -> bool:
         return True
 
 
-def create_sql_orders_items(order_by) -> Select:
-    sql = (
-        select(
-            orm.Orders.id,
-            orm.Orders.priority,
-            orm.Orders.status,
-            func.json_agg(
-                func.json_build_object(
-                    "name", orm.Products.name,
-                    "quantity",orm.OrdersItems.quantity,
-                )
-            ).label("products")
+def create_sql_list_orders(
+    id: int = None,
+    include: enums.IncludeOptions = None,
+    sort: enums.SortOptions = None,
+    list_status: list[enums.OrderStatus] = None,
+    order: enums.SortOrderOptions = None
+) -> Select:
+
+    columns = [
+        orm.Orders.id,
+        orm.Orders.priority,
+        orm.Orders.status,
+    ]
+    if include == enums.IncludeOptions.items:
+        sql = (
+            select(
+                *columns,
+                func.json_agg(
+                    func.json_build_object(
+                        "product_id", orm.Products.id,
+                        "name", orm.Products.name,
+                        "quantity", orm.OrdersItems.quantity,
+                    )
+                ).label("products")
+            )
+            .join(orm.OrdersItems, orm.OrdersItems.order_id == orm.Orders.id)
+            .join(orm.Products, orm.Products.id == orm.OrdersItems.product_id)
+            .group_by(*columns)
         )
-        .join(orm.OrdersItems, orm.OrdersItems.order_id == orm.Orders.id)
-        .join(orm.Products, orm.Products.id == orm.OrdersItems.product_id)
-        .group_by(
-            orm.Orders.id,
-            orm.Orders.priority,
-            orm.Orders.status,
-        )
-        .order_by(order_by)
-    )
+    else:
+        sql = select(*columns)
+
+    if list_status:
+        status_values = [s.value for s in list_status]
+        sql = sql.where(orm.Orders.status.in_(status_values))
+
+    if sort:
+        sort_column = getattr(orm.Orders, sort.value, None)
+        if sort_column is not None:
+            order_value = order.value if order else "asc"
+            sql = sql.order_by(
+                sort_column.desc() if order_value == "desc" else sort_column.asc()
+            )
+
+    if id:
+        sql = sql.where(orm.Orders.id==id)
+
     return sql
 
 
@@ -74,54 +98,20 @@ def list_product_image(session: Session, id: int) -> Response:
     )
 
 
-def list_orders(session: Session) -> list[dict]:
-    sql = (
-        select(
-            orm.Orders.id,
-            orm.Orders.priority,
-            orm.Orders.status,
-        )
-        .where(
-            orm.Orders.status != OrderStatus.delivered.value
-            and
-            orm.Orders.status != OrderStatus.canceled.value
-            )
-        .order_by(orm.Orders.id)
-    )
+def list_orders(session: Session, filters: dict) -> list[dict]:
+    filters = {k: v for k, v in filters.items() if v is not None}
+    sql = create_sql_list_orders(**filters)
     rows = operations.select_many(session, sql)
+
+    if filters.get("include") == enums.IncludeOptions.items:
+        return [
+            {"id": id, "priority": priority, "status": status, "products": products}
+            for id, priority, status, products in rows
+        ]
     return [
-        {"id": id_, "priority": priority, "status": status}
-        for id_, priority, status in rows
+        {"id": id, "priority": priority, "status": status}
+        for id, priority, status in rows
     ]
-
-
-def list_order_items(session: Session, id: int) -> list[dict]:
-    sql = (
-        select(
-            orm.Products.id,
-            orm.OrdersItems.quantity,
-        )
-        .join(orm.OrdersItems, orm.OrdersItems.product_id == orm.Products.id)
-        .where(orm.OrdersItems.order_id == id)
-    )
-    result = session.execute(sql).all()
-    return [row._asdict() for row in result]
-
-
-def list_orders_items(session: Session) -> list[dict]:
-    result = operations.select_many(
-        session, 
-        create_sql_orders_items(orm.Orders.id)
-    )
-    return [row._asdict() for row in result]
-
-
-def list_new_order_items(session: Session) -> list[dict]:
-    result = operations.select_many(
-        session, 
-        create_sql_orders_items(desc(orm.Orders.updated_at))
-    )
-    return [row._asdict() for row in result]
 
 
 def list_stock(session: Session) -> list[dict]:
