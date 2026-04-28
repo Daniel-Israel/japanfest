@@ -30,9 +30,6 @@ class SortOptions(PyEnum):
     created_at = "created_at"
     updated_at = "updated_at"
     status = "status"
-    priority = "priority"
-    payment_method = "payment_method"
-    total_price = "total_price"
 
 
 class SortOrderOptions(PyEnum):
