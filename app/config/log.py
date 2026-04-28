@@ -9,7 +9,7 @@ def check_log_level():
     try:
         log_level_int = int(log_level_str)
     except ValueError:
-        log_level_int = 3  
+        log_level_int = 3
 
     levels = {
         4: logging.DEBUG,
@@ -29,7 +29,7 @@ def create_logger():
 
 
 def configure_log():
-    
+
     nivel_log = check_log_level()
 
     logging.basicConfig(
@@ -38,5 +38,8 @@ def configure_log():
         datefmt="%d/%m/%Y %H:%M:%S"
     )
     logger = create_logger()
-    logger.log(nivel_log, f"Nível de log configurado: {logging.getLevelName(nivel_log)}")
+    logger.log(
+        nivel_log,
+        f"Nível de log configurado: {logging.getLevelName(nivel_log)}"
+    )
     return

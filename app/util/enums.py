@@ -6,15 +6,15 @@ class OrderStatus(PyEnum):
     ready = "Pronto"
     delivered = "Entregue"
     canceled = "Cancelado"
- 
- 
+
+
 class PaymentMethod(PyEnum):
     credit = "Cartão de Crédito"
     debit = "Cartão de Débito"
     cash = "Dinheiro"
     pix = "Pix"
- 
- 
+
+
 class MovementType(PyEnum):
     sale = "Venda"
     restock = "Entrada de Estoque"

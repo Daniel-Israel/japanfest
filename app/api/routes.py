@@ -41,7 +41,7 @@ async def redirect_docs():
 
 
 @app.get(
-    "/events/orders", 
+    "/events/orders",
     tags=["Stream", "Tela Cozinha", "Tela Clientes", "Tela Entrega"]
 )
 async def list_orders_events(request: Request):
@@ -55,16 +55,16 @@ async def list_orders_events(request: Request):
 
 @app.post("/products", tags=["ADM"])
 async def create_products(
-        name: str = Form(...),
-        category: str = Form(...),
-        price: float = Form(...),
-        priority: bool = Form(...),
-        image_data: UploadFile = File(...),
-        session: Session = Depends(get_session)
-    ):
+    name: str = Form(...),
+    category: str = Form(...),
+    price: float = Form(...),
+    priority: bool = Form(...),
+    image_data: UploadFile = File(...),
+    session: Session = Depends(get_session)
+):
     file_bytes = await image_data.read()
     return inserts.create_product(
-        session, name,  category, 
+        session, name,  category,
         price, priority, file_bytes
     )
 
@@ -75,7 +75,9 @@ async def list_products(session: Session = Depends(get_session)):
 
 
 @app.get("/products/{id}/image", tags=["Tela Venda"])
-async def list_products_images(id: int, session: Session = Depends(get_session)):
+async def list_products_images(
+    id: int, session: Session = Depends(get_session)
+):
     return selects.list_product_image(session, int(id))
 
 
@@ -89,7 +91,7 @@ async def create_orders(
     order: models.NewOrder,
     session: Session = Depends(get_session)
 ):
-    
+
     id = inserts.create_order_and_items(session, order)
     payload = json.dumps({"id": id, "status": enums.OrderStatus.queue.value})
     await sse_manager.publish("orders", payload)
@@ -116,19 +118,19 @@ async def list_orders(
 
 
 @app.patch(
-    "/orders/{id}/{status}", 
+    "/orders/{id}/{status}",
     tags=["Tela Cozinha", "Tela Entrega", "ADM"]
 )
 async def alter_orders_status(
-        id: int, 
-        status: enums.OrderStatus,
-        session: Session = Depends(get_session)
-    ):
+    id: int,
+    status: enums.OrderStatus,
+    session: Session = Depends(get_session)
+):
     updates.alter_order_status(session, id, status)
-    
+
     payload = json.dumps({"id": id, "status": status.value})
     await sse_manager.publish("orders", payload)
-    return 
+    return
 
 
 @app.get("/stocks", tags=["Dashboard", "ADM"])
@@ -146,7 +148,7 @@ async def create_stocks(
 
 @app.post("/stocks/movements", tags=["ADM"])
 async def create_stocks_movements(
-    movement: models.StockMovement, 
+    movement: models.StockMovement,
     session: Session = Depends(get_session)
-    ):
+):
     return inserts.create_stock_movement(session, movement)

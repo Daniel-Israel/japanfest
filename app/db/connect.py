@@ -19,22 +19,21 @@ class Connection:
         self.engine = None
         self.SessionFactory = None
 
-
     def connect(self):
         logger.info("Criando engine para a conexão com o DB")
-        
+        connection_string = "postgresql://{}:{}@{}:{}/{}".format(
+            self.user, self.password, self.host, self.port, self.database
+        )
         self.engine = create_engine(
-            f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}",
+            connection_string,
             pool_pre_ping=True
         )
         self.SessionFactory = sessionmaker(bind=self.engine)
         logger.info("Conexão com o DB criada")
 
-
     def disconnect(self):
         logger.info("Fechando conexão com o DB")
         self.engine.dispose()
-
 
     def get_session(self) -> Session:
         return self.SessionFactory()

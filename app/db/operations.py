@@ -26,7 +26,7 @@ def _execute(session: Session, sql: Select) -> Result:
 def _do_insert(session: Session, items: Sequence[T]) -> List[T]:
 
     log.info("Inserting %d objects into %s", len(items), session.bind)
-    
+
     try:
         session.add_all(items)
         session.commit()

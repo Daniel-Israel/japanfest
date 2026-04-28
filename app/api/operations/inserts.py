@@ -10,25 +10,26 @@ from app.util.conversions import to_dict
 
 
 def create_product(
-        session: Session, name: str, category: str,  
-        price: float, priority: bool, image_data: bytes
-    ):
+    session: Session, name: str, category: str,
+    price: float, priority: bool, image_data: bytes
+) -> dict:
     product = operations._do_insert(
         session,
         [orm.Products(
-            name=name, image_data=image_data, 
-            category=category, price=price, 
+            name=name, image_data=image_data,
+            category=category, price=price,
             priority=priority
         )]
     )
     product = to_dict(product[0])
     product.pop("image_data", None)
-    
+
     return product
 
 
 def create_stock_movement(
-        session: Session, movement: models.StockMovement) -> int:
+    session: Session, movement: models.StockMovement
+) -> int:
     stock_movement = orm.StockMovements(
         product_id=movement.product_id,
         order_id=movement.order_id,
@@ -55,10 +56,11 @@ def create_order(
     )
 
     return operations._do_insert(session, [order])[0].id
-    
+
 
 def prepare_order_items(
-        order_id: int, items: list[models.Item]) -> list[orm.OrdersItems]:
+    order_id: int, items: list[models.Item]
+) -> list[orm.OrdersItems]:
     order_items = []
     for item in items:
         order_items.append(orm.OrdersItems(
@@ -71,7 +73,8 @@ def prepare_order_items(
 
 
 def prepare_stock_movements(
-        list_items: list[orm.OrdersItems]) -> list[orm.StockMovements]:
+    list_items: list[orm.OrdersItems]
+) -> list[orm.StockMovements]:
     list_movements = []
     for item in list_items:
         list_movements.append(orm.StockMovements(
@@ -83,7 +86,9 @@ def prepare_stock_movements(
     return list_movements
 
 
-def create_order_and_items(session: Session, order: models.NewOrder) -> int:
+def create_order_and_items(
+    session: Session, order: models.NewOrder
+) -> int:
     order_id = create_order(session, order)
     order_items = prepare_order_items(order_id, order.list_items)
     movements = prepare_stock_movements(order_items)
@@ -92,7 +97,9 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     return order_id
 
 
-def create_stock(session: Session, stocks: List[models.Stock]) -> orm.Stocks:
+def create_stock(
+    session: Session, stocks: List[models.Stock]
+) -> orm.Stocks:
     list_stocks = []
     for stock in stocks:
         list_stocks.append(orm.Stocks(

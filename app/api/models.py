@@ -22,6 +22,7 @@ class StockMovement(BaseModel):
     quantity: int
     type: MovementType
 
+
 class Stock(BaseModel):
     product_id: int
     quantity: int

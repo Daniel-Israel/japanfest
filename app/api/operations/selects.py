@@ -5,8 +5,12 @@ from fastapi import Response
 from app.db import orm, operations
 from app.util import enums
 
+
 def check_priority(session: Session, list_products: list[int]) -> bool:
-    sql = select(orm.Products.priority).where(orm.Products.id.in_(list_products))
+    sql = (
+        select(orm.Products.priority)
+        .where(orm.Products.id.in_(list_products))
+        )
     priorities = session.execute(sql).scalars().all()
     if False in priorities:
         return False
@@ -55,11 +59,12 @@ def create_sql_list_orders(
         if sort_column is not None:
             order_value = order.value if order else "asc"
             sql = sql.order_by(
-                sort_column.desc() if order_value == "desc" else sort_column.asc()
+                sort_column.desc()
+                if order_value == "desc" else sort_column.asc()
             )
 
     if id:
-        sql = sql.where(orm.Orders.id==id)
+        sql = sql.where(orm.Orders.id == id)
 
     return sql
 
@@ -93,7 +98,7 @@ def list_product_image(session: Session, id: int) -> Response:
     sql = select(orm.Products.image_data).where(orm.Products.id == id)
     result = session.execute(sql).scalar_one()
     return Response(
-        content=result, 
+        content=result,
         media_type="image/jpeg",
     )
 
@@ -105,7 +110,12 @@ def list_orders(session: Session, filters: dict) -> list[dict]:
 
     if filters.get("include") == enums.IncludeOptions.items:
         return [
-            {"id": id, "priority": priority, "status": status, "products": products}
+            {
+                "id": id,
+                "priority": priority,
+                "status": status,
+                "products": products
+            }
             for id, priority, status, products in rows
         ]
     return [
