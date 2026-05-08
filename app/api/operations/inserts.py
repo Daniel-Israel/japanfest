@@ -107,3 +107,14 @@ def create_stock(
             quantity=stock.quantity
         ))
     list_stocks = operations._do_insert(session, list_stocks)
+
+
+def create_product_and_stock(
+    session: Session, name: str, category: str,
+    price: float, priority: bool, image_data: bytes
+) -> dict:
+    product = create_product(
+        session, name, category, price, priority, image_data)
+    stock = [models.Stock(product_id=product.get("id"), quantity=0)]
+    create_stock(session, stock)
+    return product

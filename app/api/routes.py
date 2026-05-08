@@ -63,7 +63,7 @@ async def create_products(
     session: Session = Depends(get_session)
 ):
     file_bytes = await image_data.read()
-    return inserts.create_product(
+    return inserts.create_product_and_stock(
         session, name,  category,
         price, priority, file_bytes
     )
