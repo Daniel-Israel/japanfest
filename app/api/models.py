@@ -16,6 +16,11 @@ class NewOrder(BaseModel):
     total_price: float
 
 
+class NewPix(BaseModel):
+    order_id: int
+    total_price: float
+
+
 class StockMovement(BaseModel):
     product_id: int
     order_id: Optional[int] = None

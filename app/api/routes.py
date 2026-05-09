@@ -12,6 +12,7 @@ from app.api.api import app
 from app.db.connect import get_session
 from app.api.operations import selects, inserts, updates
 from app.util import enums
+from app.util.pix import create_pix_qr_code
 from app.api import models
 
 
@@ -84,6 +85,11 @@ async def list_products_images(
 @app.get("/products/categories", tags=["Tela Venda"])
 async def list_categories(session: Session = Depends(get_session)):
     return selects.list_categories(session)
+
+
+@app.post("/payments", tags=["Tela Venda"])
+async def list_payments(pix_info: models.NewPix):
+    return create_pix_qr_code(pix_info)
 
 
 @app.post("/orders", tags=["Tela Venda"])

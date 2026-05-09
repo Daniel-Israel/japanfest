@@ -1,0 +1,18 @@
+meta {
+  name: Payment
+  type: http
+  seq: 13
+}
+
+post {
+  url: http://localhost:8000/payments
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "order_id": 1,
+    "total_price": 1.0
+  }
+}
