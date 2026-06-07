@@ -96,6 +96,18 @@ def list_products(session: Session) -> dict:
     ]
 
 
+def list_product_customizations(session: Session, id: int) -> dict:
+    sql = select(
+        orm.ProductCustomization.id,
+        orm.ProductCustomization.description
+    ).where(orm.ProductCustomization.product_id == id)
+    result = operations.select_many(session, sql)
+    return [
+        {"id": id, "description": description}
+        for id, description in result
+    ]
+
+
 def list_product_image(session: Session, id: int) -> Response:
     sql = select(orm.Products.image_data).where(orm.Products.id == id)
     result = session.execute(sql).scalar_one()
