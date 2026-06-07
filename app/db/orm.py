@@ -33,6 +33,21 @@ class Products(Base):
     price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     priority: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False)
+    customizable: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+
+
+class ProductCustomization(Base):
+    __tablename__ = "product_customizations"
+
+    id: Mapped[int] = mapped_column(
+        BigInteger, primary_key=True, autoincrement=True
+    )
+    product_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("products.id"), nullable=False
+    )
+    description: Mapped[str] = mapped_column(String, nullable=False)
 
 
 class Orders(Base):
@@ -81,6 +96,20 @@ class OrdersItems(Base):
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     unit_price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+
+
+class OrderItemCustomization(Base):
+    __tablename__ = "order_item_customizations"
+
+    id: Mapped[int] = mapped_column(
+        BigInteger, primary_key=True, autoincrement=True
+    )
+    order_item_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("orders_items.id"), nullable=False
+    )
+    product_customization_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("product_customizations.id"), nullable=False
+    )
 
 
 class Stocks(Base):

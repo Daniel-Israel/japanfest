@@ -33,9 +33,21 @@ CREATE TABLE products (
     category      VARCHAR         NOT NULL,
     price         NUMERIC(10, 2)  NOT NULL,
     priority      BOOLEAN         NOT NULL DEFAULT FALSE,
+    customizable    BOOLEAN         NOT NULL DEFAULT FALSE,
     image_data      BYTEA
 );
+
+-- ---------------------------------------------------------------------------
+-- product_customizations
+-- All possible modifications available for a given product
+-- ---------------------------------------------------------------------------
  
+CREATE TABLE product_customizations (
+    id          BIGSERIAL   PRIMARY KEY,
+    product_id  BIGINT      NOT NULL REFERENCES products(id),
+    description VARCHAR     NOT NULL
+);
+
 -- ---------------------------------------------------------------------------
 -- orders
 -- ---------------------------------------------------------------------------
@@ -76,6 +88,18 @@ CREATE TABLE orders_items (
     unit_price  NUMERIC(10, 2)  NOT NULL
 );
  
+-- ---------------------------------------------------------------------------
+-- order_item_customizations
+-- Links a specific order item row to one or more customizations
+-- ---------------------------------------------------------------------------
+ 
+CREATE TABLE order_item_customizations (
+    id                       BIGSERIAL   PRIMARY KEY,
+    order_item_id            BIGINT      NOT NULL REFERENCES orders_items(id),
+    product_customization_id BIGINT      NOT NULL REFERENCES product_customizations(id)
+);
+ 
+
 -- ---------------------------------------------------------------------------
 -- stock
 -- ---------------------------------------------------------------------------
