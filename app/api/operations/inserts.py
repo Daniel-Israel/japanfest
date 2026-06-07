@@ -55,8 +55,8 @@ def create_stock_movement(
 
 
 def _insert_order(
-    session: Session, 
-    order: models.NewOrder, 
+    session: Session,
+    order: models.NewOrder,
     priority: bool
 ) -> int:
     new_order = orm.Orders(
@@ -101,7 +101,7 @@ def _insert_customizations(
 
 
 def _insert_stock_movements(
-    session: Session, 
+    session: Session,
     order_items: list[orm.OrdersItems]
 ) -> None:
     movements = [
@@ -117,9 +117,9 @@ def _insert_stock_movements(
 
 
 def create_order_and_items(session: Session, order: models.NewOrder) -> int:
-    item_ids  = [item.id for item in order.list_items]
-    priority  = selects.check_priority(session, item_ids)
-    order_id  = _insert_order(session, order, priority)
+    item_ids = [item.id for item in order.list_items]
+    priority = selects.check_priority(session, item_ids)
+    order_id = _insert_order(session, order, priority)
     order_items = _insert_order_items(session, order_id, order.list_items)
     _insert_stock_movements(session, order_items)
     _insert_customizations(session, order_items, order.list_items)

@@ -31,7 +31,10 @@ def create_sql_list_orders(
         orm.Orders.status,
     ]
 
-    if include in (enums.IncludeOptions.items, enums.IncludeOptions.items_and_customizations):
+    if include in (
+        enums.IncludeOptions.items,
+        enums.IncludeOptions.items_and_customizations
+    ):
 
         if include == enums.IncludeOptions.items_and_customizations:
             customizations_subquery = (
@@ -40,9 +43,11 @@ def create_sql_list_orders(
                 )
                 .join(
                     orm.OrderItemCustomization,
-                    orm.OrderItemCustomization.product_customization_id == orm.ProductCustomization.id
+                    orm.OrderItemCustomization.product_customization_id
+                    == orm.ProductCustomization.id
                 )
-                .where(orm.OrderItemCustomization.order_item_id == orm.OrdersItems.id)
+                .where(orm.OrderItemCustomization.order_item_id
+                       == orm.OrdersItems.id)
                 .correlate(orm.OrdersItems)
                 .scalar_subquery()
             )
@@ -79,7 +84,8 @@ def create_sql_list_orders(
         if sort_column is not None:
             order_value = order.value if order else "asc"
             sql = sql.order_by(
-                sort_column.desc() if order_value == "desc" else sort_column.asc()
+                sort_column.desc() if order_value
+                == "desc" else sort_column.asc()
             )
     if id:
         sql = sql.where(orm.Orders.id == id)
@@ -108,8 +114,8 @@ def list_products(session: Session) -> dict:
     ).order_by(orm.Products.name)
     result = operations.select_many(session, sql)
     return [
-        {"name": name, "id": id, "category": category, 
-        "customizable": customizable, "price": price}
+        {"name": name, "id": id, "category": category,
+            "customizable": customizable, "price": price}
         for name, id, category, customizable, price in result
     ]
 
@@ -153,8 +159,8 @@ def list_orders(session: Session, filters: dict) -> list[dict]:
             for id, priority, status, products in rows
         ]
     elif filters.get("include") == \
-        enums.IncludeOptions.items_and_customizations:
-            query_result = [
+            enums.IncludeOptions.items_and_customizations:
+        query_result = [
             {
                 "id": id,
                 "priority": priority,
