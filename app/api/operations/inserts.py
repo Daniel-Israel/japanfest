@@ -11,14 +11,15 @@ from app.util.conversions import to_dict
 
 def create_product(
     session: Session, name: str, category: str,
-    price: float, priority: bool, image_data: bytes
+    price: float, priority: bool, customizable: bool,
+    image_data: bytes
 ) -> dict:
     product = operations._do_insert(
         session,
         [orm.Products(
             name=name, image_data=image_data,
             category=category, price=price,
-            priority=priority
+            priority=priority, customizable=customizable
         )]
     )
     product = to_dict(product[0])
@@ -111,10 +112,11 @@ def create_stock(
 
 def create_product_and_stock(
     session: Session, name: str, category: str,
-    price: float, priority: bool, image_data: bytes
+    price: float, priority: bool, customizable: bool,
+    image_data: bytes
 ) -> dict:
     product = create_product(
-        session, name, category, price, priority, image_data)
+        session, name, category, price, priority, customizable, image_data)
     stock = [models.Stock(product_id=product.get("id"), quantity=0)]
     create_stock(session, stock)
     return product

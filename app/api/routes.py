@@ -60,13 +60,15 @@ async def create_products(
     category: str = Form(...),
     price: float = Form(...),
     priority: bool = Form(...),
+    customizable: bool = Form(...),
     image_data: UploadFile = File(...),
     session: Session = Depends(get_session)
 ):
     file_bytes = await image_data.read()
     return inserts.create_product_and_stock(
         session, name,  category,
-        price, priority, file_bytes
+        price, priority, customizable,
+        file_bytes
     )
 
 
