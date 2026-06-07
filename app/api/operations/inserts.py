@@ -28,6 +28,20 @@ def create_product(
     return product
 
 
+def create_customization(
+    session: Session, customization: models.NewCustomization
+) -> dict:
+    customization = operations._do_insert(
+        session,
+        [orm.ProductCustomization(
+            product_id=customization.product_id,
+            description=customization.description
+        )]
+    )
+
+    return customization
+
+
 def create_stock_movement(
     session: Session, movement: models.StockMovement
 ) -> int:

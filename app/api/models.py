@@ -16,6 +16,11 @@ class NewOrder(BaseModel):
     total_price: float
 
 
+class NewCustomization(BaseModel):
+    product_id: int
+    description: str
+
+
 class NewPix(BaseModel):
     order_id: int
     total_price: float

@@ -72,6 +72,14 @@ async def create_products(
     )
 
 
+@app.post("/products/customizations", tags=["ADM"])
+async def create_products_customizations(
+    customization: models.NewCustomization,
+    session: Session = Depends(get_session)
+):
+    return inserts.create_customization(session, customization)
+
+
 @app.get("/products", tags=["Tela Venda"])
 async def list_products(session: Session = Depends(get_session)):
     return selects.list_products(session)
