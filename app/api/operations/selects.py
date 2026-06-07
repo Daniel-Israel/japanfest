@@ -25,23 +25,44 @@ def create_sql_list_orders(
     list_status: list[enums.OrderStatus] = None,
     order: enums.SortOrderOptions = None
 ) -> Select:
-
     columns = [
         orm.Orders.id,
         orm.Orders.priority,
         orm.Orders.status,
     ]
-    if include == enums.IncludeOptions.items:
+
+    if include in (enums.IncludeOptions.items, enums.IncludeOptions.items_and_customizations):
+
+        if include == enums.IncludeOptions.items_and_customizations:
+            customizations_subquery = (
+                select(
+                    func.json_agg(orm.ProductCustomization.description)
+                )
+                .join(
+                    orm.OrderItemCustomization,
+                    orm.OrderItemCustomization.product_customization_id == orm.ProductCustomization.id
+                )
+                .where(orm.OrderItemCustomization.order_item_id == orm.OrdersItems.id)
+                .correlate(orm.OrdersItems)
+                .scalar_subquery()
+            )
+            item_json = func.json_build_object(
+                "product_id",      orm.Products.id,
+                "name",            orm.Products.name,
+                "quantity",        orm.OrdersItems.quantity,
+                "customizations",  customizations_subquery,
+            )
+        else:
+            item_json = func.json_build_object(
+                "product_id", orm.Products.id,
+                "name",       orm.Products.name,
+                "quantity",   orm.OrdersItems.quantity,
+            )
+
         sql = (
             select(
                 *columns,
-                func.json_agg(
-                    func.json_build_object(
-                        "product_id", orm.Products.id,
-                        "name", orm.Products.name,
-                        "quantity", orm.OrdersItems.quantity,
-                    )
-                ).label("products")
+                func.json_agg(item_json).label("products")
             )
             .join(orm.OrdersItems, orm.OrdersItems.order_id == orm.Orders.id)
             .join(orm.Products, orm.Products.id == orm.OrdersItems.product_id)
@@ -53,16 +74,13 @@ def create_sql_list_orders(
     if list_status:
         status_values = [s.value for s in list_status]
         sql = sql.where(orm.Orders.status.in_(status_values))
-
     if sort:
         sort_column = getattr(orm.Orders, sort.value, None)
         if sort_column is not None:
             order_value = order.value if order else "asc"
             sql = sql.order_by(
-                sort_column.desc()
-                if order_value == "desc" else sort_column.asc()
+                sort_column.desc() if order_value == "desc" else sort_column.asc()
             )
-
     if id:
         sql = sql.where(orm.Orders.id == id)
 
@@ -122,8 +140,10 @@ def list_orders(session: Session, filters: dict) -> list[dict]:
     sql = create_sql_list_orders(**filters)
     rows = operations.select_many(session, sql)
 
+    query_result = []
+
     if filters.get("include") == enums.IncludeOptions.items:
-        return [
+        query_result = [
             {
                 "id": id,
                 "priority": priority,
@@ -132,10 +152,23 @@ def list_orders(session: Session, filters: dict) -> list[dict]:
             }
             for id, priority, status, products in rows
         ]
-    return [
-        {"id": id, "priority": priority, "status": status}
-        for id, priority, status in rows
-    ]
+    elif filters.get("include") == \
+        enums.IncludeOptions.items_and_customizations:
+            query_result = [
+            {
+                "id": id,
+                "priority": priority,
+                "status": status,
+                "products": products
+            }
+            for id, priority, status, products in rows
+        ]
+    else:
+        query_result = [
+            {"id": id, "priority": priority, "status": status}
+            for id, priority, status in rows
+        ]
+    return query_result
 
 
 def list_stock(session: Session) -> list[dict]:

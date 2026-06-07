@@ -23,6 +23,7 @@ class MovementType(PyEnum):
 
 class IncludeOptions(PyEnum):
     items = "items"
+    items_and_customizations = "items_and_customizations"
 
 
 class SortOptions(PyEnum):
