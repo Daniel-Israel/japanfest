@@ -8,6 +8,7 @@ class Item(BaseModel):
     id: int
     quantity: int
     unit_price: float
+    customizations: Optional[list[int]] = None
 
 
 class NewOrder(BaseModel):

@@ -54,61 +54,75 @@ def create_stock_movement(
     return operations._do_insert(session, [stock_movement])
 
 
-def create_order(
-    session: Session,
-    order: models.NewOrder
+def _insert_order(
+    session: Session, 
+    order: models.NewOrder, 
+    priority: bool
 ) -> int:
-    list_ids = []
-    for item in order.list_items:
-        list_ids.append(item.id)
-
-    priority = selects.check_priority(session, list_ids)
-
-    order = orm.Orders(
+    new_order = orm.Orders(
         payment_method=order.payment_method.value,
         priority=priority,
-        total_price=order.total_price
+        total_price=order.total_price,
     )
+    return operations._do_insert(session, [new_order])[0].id
 
-    return operations._do_insert(session, [order])[0].id
 
-
-def prepare_order_items(
-    order_id: int, items: list[models.Item]
+def _insert_order_items(
+    session: Session, order_id: int, items: list[models.Item]
 ) -> list[orm.OrdersItems]:
-    order_items = []
-    for item in items:
-        order_items.append(orm.OrdersItems(
+    order_items = [
+        orm.OrdersItems(
             order_id=order_id,
             product_id=item.id,
             quantity=item.quantity,
-            unit_price=item.unit_price
-        ))
-    return order_items
+            unit_price=item.unit_price,
+        )
+        for item in items
+    ]
+    return operations._do_insert(session, order_items)
 
 
-def prepare_stock_movements(
-    list_items: list[orm.OrdersItems]
-) -> list[orm.StockMovements]:
-    list_movements = []
-    for item in list_items:
-        list_movements.append(orm.StockMovements(
+def _insert_customizations(
+    session: Session,
+    order_items: list[orm.OrdersItems],
+    items: list[models.Item],
+) -> None:
+    customizations = [
+        orm.OrderItemCustomization(
+            order_item_id=order_item.id,
+            product_customization_id=customization_id,
+        )
+        for order_item, item in zip(order_items, items)
+        if item.customizations
+        for customization_id in item.customizations
+    ]
+    if customizations:
+        operations._do_insert(session, customizations)
+
+
+def _insert_stock_movements(
+    session: Session, 
+    order_items: list[orm.OrdersItems]
+) -> None:
+    movements = [
+        orm.StockMovements(
             product_id=item.product_id,
             order_id=item.order_id,
             quantity=-(item.quantity),
-            type=MovementType.sale.value
-        ))
-    return list_movements
-
-
-def create_order_and_items(
-    session: Session, order: models.NewOrder
-) -> int:
-    order_id = create_order(session, order)
-    order_items = prepare_order_items(order_id, order.list_items)
-    movements = prepare_stock_movements(order_items)
-    operations._do_insert(session, order_items)
+            type=MovementType.sale.value,
+        )
+        for item in order_items
+    ]
     operations._do_insert(session, movements)
+
+
+def create_order_and_items(session: Session, order: models.NewOrder) -> int:
+    item_ids  = [item.id for item in order.list_items]
+    priority  = selects.check_priority(session, item_ids)
+    order_id  = _insert_order(session, order, priority)
+    order_items = _insert_order_items(session, order_id, order.list_items)
+    _insert_stock_movements(session, order_items)
+    _insert_customizations(session, order_items, order.list_items)
     return order_id
 
 
