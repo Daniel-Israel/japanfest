@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
 
 from app.util.enums import PaymentMethod, MovementType
 
@@ -12,7 +12,7 @@ class Item(BaseModel):
 
 
 class NewOrder(BaseModel):
-    list_items: List[Item]
+    list_items: list[Item]
     payment_method: PaymentMethod
     total_price: float
 

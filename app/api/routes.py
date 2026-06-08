@@ -1,6 +1,6 @@
 import json
 import asyncio
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import Depends, UploadFile, File, Form, Request, Query
 from fastapi.responses import RedirectResponse, StreamingResponse
@@ -163,7 +163,7 @@ async def list_stocks(session: Session = Depends(get_session)):
 
 @app.post("/stocks", tags=["ADM"])
 async def create_stocks(
-    stocks: List[models.Stock],
+    stocks: list[models.Stock],
     session: Session = Depends(get_session)
 ):
     return inserts.create_stock(session, stocks)

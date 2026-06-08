@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy.orm import Session
 
 from app.db import orm, operations
@@ -127,7 +125,7 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
 
 
 def create_stock(
-    session: Session, stocks: List[models.Stock]
+    session: Session, stocks: list[models.Stock]
 ) -> orm.Stocks:
     list_stocks = []
     for stock in stocks:
