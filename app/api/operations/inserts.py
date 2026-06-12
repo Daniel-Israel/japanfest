@@ -1,10 +1,13 @@
 from sqlalchemy.orm import Session
 
+import app.queue.connect as mq
+
 from app.db import orm, operations
 from app.api import models
 from app.api.operations import selects
 from app.util.enums import MovementType
 from app.util.conversions import to_dict
+from app.queue.producer import publish_order_receipts
 
 
 def create_product(
@@ -121,6 +124,7 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     order_items = _insert_order_items(session, order_id, order.list_items)
     _insert_stock_movements(session, order_items)
     _insert_customizations(session, order_items, order.list_items)
+    publish_order_receipts(session, mq.channel, order_id, order)
     return order_id
 
 
