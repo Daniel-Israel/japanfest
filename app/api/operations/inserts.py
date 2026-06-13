@@ -124,7 +124,7 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     order_items = _insert_order_items(session, order_id, order.list_items)
     _insert_stock_movements(session, order_items)
     _insert_customizations(session, order_items, order.list_items)
-    publish_order_receipts(session, mq.channel, order_id, order)
+    publish_order_receipts(session, mq.get_channel(), order_id, order)
     return order_id
 
 
