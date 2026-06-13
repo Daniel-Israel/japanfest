@@ -25,3 +25,13 @@ def connect_to_queue():
     )
 
     return channel
+
+
+def get_channel():
+    global channel
+    try:
+        if channel is None or channel.is_closed:
+            connect_to_queue()
+    except Exception:
+        connect_to_queue()
+    return channel
