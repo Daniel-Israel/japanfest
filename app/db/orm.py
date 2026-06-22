@@ -113,7 +113,7 @@ class OrderItemCustomization(Base):
     )
 
 
-class Receipt(Base):
+class Receipts(Base):
     __tablename__ = "receipts"
 
     order_id: Mapped[int] = mapped_column(
@@ -134,7 +134,7 @@ class Receipt(Base):
             ),
         nullable=False, default=enums.ReceiptStatus.pending.value,
     )
-    error_msg: Mapped[str | None] = mapped_column(Text, nullable=False)
+    error_msg: Mapped[str | None] = mapped_column(Text, nullable=True)
     printed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
