@@ -22,7 +22,18 @@ CREATE TYPE movement_type AS ENUM (
     'Entrada de Estoque',
     'Ajuste'
 );
- 
+
+CREATE TYPE receipt_type AS ENUM (
+    'Client',
+    'Kitchen'
+);
+
+CREATE TYPE receipt_status AS ENUM (
+    'Pending',
+    'Printed',
+    'Error'
+);
+
 -- ---------------------------------------------------------------------------
 -- products
 -- ---------------------------------------------------------------------------
@@ -99,6 +110,20 @@ CREATE TABLE order_item_customizations (
     product_customization_id BIGINT      NOT NULL REFERENCES product_customizations(id)
 );
  
+-- ---------------------------------------------------------------------------
+-- receipts
+-- ---------------------------------------------------------------------------
+ 
+CREATE TABLE receipts (
+    order_id    INTEGER       NOT NULL REFERENCES orders(id),
+    type        receipt_type  NOT NULL,
+    status      receipt_status NOT NULL DEFAULT 'Pending',
+    error_msg   TEXT,
+    printed_at  TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ   NOT NULL DEFAULT now(),
+
+    PRIMARY KEY (order_id, type)
+);
 
 -- ---------------------------------------------------------------------------
 -- stock
