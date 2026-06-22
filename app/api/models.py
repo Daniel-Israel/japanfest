@@ -27,13 +27,13 @@ class NewPix(BaseModel):
     total_price: float
 
 
+class NewStock(BaseModel):
+    product_id: int
+    quantity: int
+
+
 class StockMovement(BaseModel):
     product_id: int
     order_id: Optional[int] = None
     quantity: int
     type: MovementType
-
-
-class Stock(BaseModel):
-    product_id: int
-    quantity: int

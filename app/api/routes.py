@@ -163,7 +163,7 @@ async def list_stocks(session: Session = Depends(get_session)):
 
 @app.post("/stocks", tags=["ADM"])
 async def create_stocks(
-    stocks: list[models.Stock],
+    stocks: list[models.NewStock],
     session: Session = Depends(get_session)
 ):
     return inserts.create_stock(session, stocks)
