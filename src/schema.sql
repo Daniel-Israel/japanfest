@@ -24,14 +24,14 @@ CREATE TYPE movement_type AS ENUM (
 );
 
 CREATE TYPE receipt_type AS ENUM (
-    'Client',
-    'Kitchen'
+    'Cliente',
+    'Cozinha'
 );
 
 CREATE TYPE receipt_status AS ENUM (
-    'Pending',
-    'Printed',
-    'Error'
+    'Pendente',
+    'Impresso',
+    'Erro'
 );
 
 -- ---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ CREATE TABLE order_item_customizations (
 CREATE TABLE receipts (
     order_id    INTEGER       NOT NULL REFERENCES orders(id),
     type        receipt_type  NOT NULL,
-    status      receipt_status NOT NULL DEFAULT 'Pending',
+    status      receipt_status NOT NULL DEFAULT 'Pendente',
     error_msg   TEXT,
     printed_at  TIMESTAMPTZ,
     created_at  TIMESTAMPTZ   NOT NULL DEFAULT now(),
