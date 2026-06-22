@@ -10,6 +10,7 @@ from sqlalchemy import (
     Numeric,
     String,
     LargeBinary,
+    Text,
     func,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -111,6 +112,35 @@ class OrderItemCustomization(Base):
         BigInteger, ForeignKey("product_customizations.id"), nullable=False
     )
 
+
+class Receipt(Base):
+    __tablename__ = "receipts"
+
+    order_id: Mapped[int] = mapped_column(
+        ForeignKey("orders.id"),
+        primary_key=True
+    )
+    type: Mapped[enums.ReceiptType] = mapped_column(
+        Enum(
+                enums.ReceiptType,
+                values_callable=lambda e: [i.value for i in e]
+            ),
+        primary_key=True,
+    )
+    status: Mapped[enums.ReceiptStatus] = mapped_column(
+        Enum(
+                enums.ReceiptStatus,
+                values_callable=lambda e: [i.value for i in e]
+            ),
+        nullable=False, default=enums.ReceiptStatus.pending.value,
+    )
+    error_msg: Mapped[str | None] = mapped_column(Text, nullable=False)
+    printed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
 class Stocks(Base):
     __tablename__ = "stock"
