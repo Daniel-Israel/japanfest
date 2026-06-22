@@ -15,6 +15,17 @@ class PaymentMethod(PyEnum):
     pix = "Pix"
 
 
+class ReceiptType(PyEnum):
+    client = "Cliente"
+    kitchen = "Cozinha"
+
+
+class ReceiptStatus(PyEnum):
+    pending = "Pendente"
+    printed = "Impresso"
+    error = "Erro"
+
+
 class MovementType(PyEnum):
     sale = "Venda"
     restock = "Entrada de Estoque"
