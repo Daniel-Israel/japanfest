@@ -187,3 +187,69 @@ def list_stock(session: Session) -> list[dict]:
         {"product_id": product_id, "quantity": quantity}
         for product_id, quantity in result
     ]
+
+
+def list_receipts(session: Session, id: int = None) -> list[dict]:
+    sql = (
+        select(
+            orm.Receipts.order_id,
+            orm.Receipts.type,
+            orm.Receipts.status,
+            orm.Receipts.error_msg,
+            orm.Orders.payment_method,
+            orm.Products.name,
+            orm.OrdersItems.quantity,
+            orm.ProductCustomization.description,
+        )
+        .join(orm.Orders, orm.Receipts.order_id == orm.Orders.id)
+        .join(
+                orm.OrdersItems,
+                orm.Receipts.order_id == orm.OrdersItems.order_id
+            )
+        .join(orm.Products, orm.OrdersItems.product_id == orm.Products.id)
+        .outerjoin(
+            orm.OrderItemCustomization,
+            orm.OrdersItems.id == orm.OrderItemCustomization.order_item_id
+        )
+        .outerjoin(
+            orm.ProductCustomization,
+            orm.OrderItemCustomization.product_customization_id
+            == orm.ProductCustomization.id
+        )
+        .order_by(orm.OrdersItems.id.desc())
+    )
+    if id is not None:
+        sql = sql.where(orm.Receipts.order_id == id)
+
+    result = operations.select_many(session, sql)
+
+    receipts: dict[tuple, dict] = {}
+    for (order_id, type, status, error_msg, payment_method,
+         name, quantity, description) in result:
+        receipt_key = (order_id, type)
+        if receipt_key not in receipts:
+            receipts[receipt_key] = {
+                "order_id": order_id,
+                "type": type,
+                "status": status,
+                "error_msg": error_msg,
+                "payment_method": payment_method,
+                "items": {},
+            }
+
+        item_key = (order_id, type, name)
+        if item_key not in receipts[receipt_key]["items"]:
+            receipts[receipt_key]["items"][item_key] = {
+                "name": name,
+                "quantity": quantity,
+                "customizations": [],
+            }
+
+        if description:
+            (receipts[receipt_key]["items"][item_key]["customizations"]
+             .append(description))
+
+    for receipt in receipts.values():
+        receipt["items"] = list(receipt["items"].values())
+
+    return list(receipts.values())

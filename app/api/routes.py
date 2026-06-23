@@ -175,3 +175,11 @@ async def create_stocks_movements(
     session: Session = Depends(get_session)
 ):
     return inserts.create_stock_movement(session, movement)
+
+
+@app.get("/receipts", tags=["ADM"])
+async def list_receipts(
+    id: int = Query(None),
+    session: Session = Depends(get_session)
+):
+    return selects.list_receipts(session, id)
