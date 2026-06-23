@@ -142,6 +142,7 @@ class Receipts(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
+
 class Stocks(Base):
     __tablename__ = "stock"
 
