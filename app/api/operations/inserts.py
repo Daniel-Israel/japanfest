@@ -1,13 +1,10 @@
 from sqlalchemy.orm import Session
 
-import app.queue.connect as mq
-
 from app.db import orm, operations
 from app.api import models
 from app.api.operations import selects
-from app.util.enums import MovementType
+from app.util.enums import MovementType, ReceiptType
 from app.util.conversions import to_dict
-from app.queue.producer import publish_order_receipts
 
 
 def create_product(
@@ -117,6 +114,18 @@ def _insert_stock_movements(
     operations._do_insert(session, movements)
 
 
+def _insert_order_receipts(session: Session, order_id: int):
+    receipts = []
+    for type in [ReceiptType.client.value, ReceiptType.kitchen.value]:
+        receipts.append(
+            orm.Receipts(
+                order_id=order_id,
+                type=type,
+            )
+        )
+        operations._do_insert(session, receipts)
+
+
 def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     item_ids = [item.id for item in order.list_items]
     priority = selects.check_priority(session, item_ids)
@@ -124,12 +133,12 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     order_items = _insert_order_items(session, order_id, order.list_items)
     _insert_stock_movements(session, order_items)
     _insert_customizations(session, order_items, order.list_items)
-    publish_order_receipts(session, mq.get_channel(), order_id, order)
+    _insert_order_receipts(session, order_id)
     return order_id
 
 
 def create_stock(
-    session: Session, stocks: list[models.Stock]
+    session: Session, stocks: list[models.NewStock]
 ) -> orm.Stocks:
     list_stocks = []
     for stock in stocks:
@@ -147,6 +156,6 @@ def create_product_and_stock(
 ) -> dict:
     product = create_product(
         session, name, category, price, priority, customizable, image_data)
-    stock = [models.Stock(product_id=product.get("id"), quantity=0)]
+    stock = [models.NewStock(product_id=product.get("id"), quantity=0)]
     create_stock(session, stock)
     return product
