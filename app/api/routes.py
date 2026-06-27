@@ -105,7 +105,7 @@ async def list_categories(session: Session = Depends(get_session)):
 
 
 @app.post("/payments", tags=["Tela Venda"])
-async def list_payments(pix_info: models.NewPix):
+async def create_payments(pix_info: models.NewPix):
     return create_pix_qr_code(pix_info)
 
 
