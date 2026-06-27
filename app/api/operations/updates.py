@@ -1,9 +1,9 @@
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
-from app.util.enums import OrderStatus, MovementType, IncludeOptions
+from app.util import enums
 from app.db import orm
-from app.db.operations import _do_insert
+from app.db.operations import _do_insert, _execute
 from app.api.operations.selects import list_orders
 
 
@@ -11,13 +11,13 @@ def cancel_movement(session: Session, id: int) -> None:
     stock_movements = []
 
     order = list_orders(
-        session, {"id": id, "include": IncludeOptions.items})[0]
+        session, {"id": id, "include": enums.IncludeOptions.items})[0]
     for product in order.get("products"):
         stock_movements.append(orm.StockMovements(
             product_id=product.get("product_id"),
             order_id=id,
             quantity=product.get("quantity"),
-            type=MovementType.fix.value
+            type=enums.MovementType.fix.value
         ))
     _do_insert(session, stock_movements)
     return
@@ -26,9 +26,9 @@ def cancel_movement(session: Session, id: int) -> None:
 def alter_order_status(
     session: Session,
     id: int,
-    new_status: OrderStatus
+    new_status: enums.OrderStatus
 ) -> None:
-    if new_status == OrderStatus.canceled:
+    if new_status == enums.OrderStatus.canceled:
         cancel_movement(session, id)
     sql = (
         update(orm.Orders)
@@ -37,3 +37,17 @@ def alter_order_status(
     )
     session.execute(sql)
     return
+
+
+def alter_receipt_status(
+    session: Session,
+    id: int,
+    type: enums.ReceiptType,
+    status: enums.ReceiptStatus,
+):
+    sql = (
+        update(orm.Receipts)
+        .where(orm.Receipts.order_id == id, orm.Receipts.type == type)
+        .values(status=status)
+    )
+    _execute(session, sql)

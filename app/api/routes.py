@@ -183,3 +183,13 @@ async def list_receipts(
     session: Session = Depends(get_session)
 ):
     return selects.list_receipts(session, id)
+
+
+@app.patch("/receipts", tags=["Tela Clientes", "ADM"])
+async def alter_receipts_status(
+    id: int,
+    type: enums.ReceiptType,
+    status: enums.ReceiptStatus,
+    session: Session = Depends(get_session)
+):
+    updates.alter_receipt_status(session, id, type, status)
