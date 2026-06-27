@@ -10,22 +10,6 @@ services:
       - ./src/schema.sql:/docker-entrypoint-initdb.d/init-db.sql
       - data:/data/postgres
 
-  rabbitmq:
-    image: rabbitmq:4-management
-    container_name: rabbitmq
-    restart: unless-stopped
-    ports:
-      # AMQP protocol port (application connections)
-      - "5672:5672"
-      # HTTP Management UI port
-      - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=rabbitmqpassword
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - rabbitmq_log:/var/log/rabbitmq
-
   app:
     image: backend-festival:1.0
     container_name: backend-festival
@@ -35,9 +19,6 @@ services:
       - 8000:8000
     depends_on:
       - db
-      - rabbitmq
 
 volumes:
   data:
-  rabbitmq_data:
-  rabbitmq_log:
