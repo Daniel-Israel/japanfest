@@ -5,6 +5,7 @@ from app.api import models
 from app.api.operations import selects
 from app.util.enums import MovementType, ReceiptType
 from app.util.conversions import to_dict
+from app.api.operations.print import print_receipt
 
 
 def create_product(
@@ -134,6 +135,7 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     _insert_stock_movements(session, order_items)
     _insert_customizations(session, order_items, order.list_items)
     _insert_order_receipts(session, order_id)
+    print_receipt(session, order_id, ReceiptType.client.value)
     return order_id
 
 

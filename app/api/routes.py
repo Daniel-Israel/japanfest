@@ -14,6 +14,7 @@ from app.api.operations import selects, inserts, updates
 from app.util import enums
 from app.util.pix import create_pix_qr_code
 from app.api import models
+from app.api.operations.inserts import print_receipt
 
 
 log = create_logger()
@@ -192,4 +193,6 @@ async def alter_receipts_status(
     status: enums.ReceiptStatus,
     session: Session = Depends(get_session)
 ):
+    if status == enums.ReceiptStatus.pending.value:
+        print_receipt(session, id, type)
     updates.alter_receipt_status(session, id, type, status)
