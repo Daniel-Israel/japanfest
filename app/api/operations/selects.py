@@ -197,8 +197,10 @@ def list_receipts(session: Session, id: int = None) -> list[dict]:
             orm.Receipts.status,
             orm.Receipts.error_msg,
             orm.Orders.payment_method,
+            orm.Orders.total_price,
             orm.Products.name,
             orm.OrdersItems.quantity,
+            orm.OrdersItems.unit_price,
             orm.ProductCustomization.description,
         )
         .join(orm.Orders, orm.Receipts.order_id == orm.Orders.id)
@@ -225,7 +227,7 @@ def list_receipts(session: Session, id: int = None) -> list[dict]:
 
     receipts: dict[tuple, dict] = {}
     for (order_id, type, status, error_msg, payment_method,
-         name, quantity, description) in result:
+         total_price, name, quantity, unit_price, description) in result:
         receipt_key = (order_id, type)
         if receipt_key not in receipts:
             receipts[receipt_key] = {
@@ -234,6 +236,7 @@ def list_receipts(session: Session, id: int = None) -> list[dict]:
                 "status": status,
                 "error_msg": error_msg,
                 "payment_method": payment_method,
+                "total_price": total_price,
                 "items": {},
             }
 
@@ -242,6 +245,7 @@ def list_receipts(session: Session, id: int = None) -> list[dict]:
             receipts[receipt_key]["items"][item_key] = {
                 "name": name,
                 "quantity": quantity,
+                "unit_price": unit_price,
                 "customizations": [],
             }
 
