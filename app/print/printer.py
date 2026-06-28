@@ -57,12 +57,11 @@ def _create_img(order_id: int) -> Image:
 def _print_base(order_id: int):
     try:
         printer.set(
-            align="center",
-            double_width=True,
-            double_height=True,
-            bold=True,
-            density=8,
-            font='a'
+            align="left",
+            font='b',
+            double_width=False,
+            double_height=False,
+            bold=False,
         )
 
         printer.text("Festival do Japão")
@@ -92,6 +91,13 @@ def print_client_receipt(
         return ReceiptStatus.error.value
 
     try:
+        printer.set(
+            align="left",
+            font='b',
+            double_width=False,
+            double_height=False,
+            bold=False,
+        )
         txt = "Pagamento via {}: R$ {}".format(
                 payment_method.value,
                 total_price
@@ -124,6 +130,10 @@ def print_kitchen_receipt(order_id: int, items: list[dict]):
     if isinstance(_print_base(order_id), ReceiptStatus):
         return ReceiptStatus.error.value
     try:
+        printer.set(
+            align="left",
+            font='b'
+        )
         for item in items:
             txt = "{}x - {}\n".format(
                 item["quantity"], item["name"]
