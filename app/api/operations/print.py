@@ -26,7 +26,7 @@ def print_receipt(session: Session, order_id: int, type: ReceiptType) -> str:
     if type == ReceiptType.client.value:
         result = \
             print_client_receipt(order_id, payment_method, total_price, items)
-    else:
+    elif type == ReceiptType.kitchen.value:
         result = print_kitchen_receipt(order_id, items)
 
     updates.alter_receipt_status(session, order_id, type, result)
