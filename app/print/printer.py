@@ -57,11 +57,11 @@ def _create_img(order_id: int) -> Image:
 def _print_base(order_id: int):
     try:
         printer.set(
-            align="left",
-            font='b',
-            double_width=False,
-            double_height=False,
-            bold=False,
+            align="center",
+            font='a',
+            double_width=True,
+            double_height=True,
+            bold=True,
         )
 
         printer.text("Festival do Japão")
@@ -91,6 +91,7 @@ def print_client_receipt(
         return ReceiptStatus.error.value
 
     try:
+        printer.charcode("CP860")
         printer.set(
             align="left",
             font='b',
@@ -132,7 +133,10 @@ def print_kitchen_receipt(order_id: int, items: list[dict]):
     try:
         printer.set(
             align="left",
-            font='b'
+            font='b',
+            double_width=False,
+            double_height=False,
+            bold=False,
         )
         for item in items:
             txt = "{}x - {}\n".format(
