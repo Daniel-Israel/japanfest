@@ -23,10 +23,10 @@ def print_receipt(session: Session, order_id: int, type: ReceiptType) -> str:
     payment_method, total_price, items = \
         _fetch_receipt_info(session, order_id, type)
 
-    if type == ReceiptType.client.value:
+    if type == ReceiptType.client:
         result = \
             print_client_receipt(order_id, payment_method, total_price, items)
-    elif type == ReceiptType.kitchen.value:
+    elif type == ReceiptType.kitchen:
         result = print_kitchen_receipt(order_id, items)
 
     updates.alter_receipt_status(session, order_id, type, result)

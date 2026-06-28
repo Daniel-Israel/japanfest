@@ -135,7 +135,7 @@ def create_order_and_items(session: Session, order: models.NewOrder) -> int:
     _insert_stock_movements(session, order_items)
     _insert_customizations(session, order_items, order.list_items)
     _insert_order_receipts(session, order_id)
-    print_receipt(session, order_id, ReceiptType.client.value)
+    print_receipt(session, order_id, ReceiptType.client)
     return order_id
 
 
