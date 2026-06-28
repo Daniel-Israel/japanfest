@@ -194,5 +194,5 @@ async def alter_receipts_status(
     session: Session = Depends(get_session)
 ):
     if status.value == enums.ReceiptStatus.pending.value:
-        print_receipt(session, id, type)
+        return print_receipt(session, id, type)
     updates.alter_receipt_status(session, id, type, status)
