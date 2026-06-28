@@ -12,7 +12,7 @@ def _fetch_receipt_info(
 ) -> dict:
     receipts = selects.list_receipts(session, order_id)
     for receipt in receipts:
-        if receipt.get("type") == type:
+        if receipt.get("type").value == ReceiptType.client.value:
             payment_method = receipt.get("payment_method")
             total_price = receipt.get("total_price")
             items = receipt.get("items")
