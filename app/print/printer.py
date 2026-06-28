@@ -56,6 +56,7 @@ def _create_img(order_id: int) -> Image:
 
 def _print_base(order_id: int):
     try:
+        printer.charcode("CP860")
         printer.set(
             align="center",
             font='a',
@@ -131,6 +132,7 @@ def print_kitchen_receipt(order_id: int, items: list[dict]):
     if isinstance(_print_base(order_id), ReceiptStatus):
         return ReceiptStatus.error.value
     try:
+        printer.charcode("CP860")
         printer.set(
             align="left",
             font='b',
