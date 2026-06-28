@@ -93,7 +93,7 @@ def print_client_receipt(
 
     try:
         txt = "Pagamento via {}: R$ {}".format(
-                payment_method,
+                payment_method.value,
                 total_price
             )
         printer.text(txt)
@@ -101,7 +101,7 @@ def print_client_receipt(
         for item in items:
             txt = "{}x - {} R$ {}\n".format(
                 item["quantity"],
-                item["product_name"],
+                item["name"],
                 item["unit_price"]
             )
             printer.text(txt)
@@ -126,7 +126,7 @@ def print_kitchen_receipt(order_id: int, items: list[dict]):
     try:
         for item in items:
             txt = "{}x - {}\n".format(
-                item["quantity"], item["product_name"]
+                item["quantity"], item["name"]
             )
             printer.text(txt)
             for customization in item["customizations"]:
