@@ -8,7 +8,7 @@ from app.util.enums import ReceiptStatus
 log = create_logger()
 
 
-def connect_printer():
+def connect_printer() -> None:
     log.info("Conectando a impressora USB")
     global printer
     try:
@@ -85,7 +85,7 @@ def print_client_receipt(
     payment_method: str,
     total_price: float,
     items: list[dict],
-):
+) -> str:
     log.info("Imprimindo via do cliente de id: {}".format(order_id))
 
     if isinstance(_print_base(order_id), ReceiptStatus):
@@ -126,7 +126,7 @@ def print_client_receipt(
     return ReceiptStatus.printed.value
 
 
-def print_kitchen_receipt(order_id: int, items: list[dict]):
+def print_kitchen_receipt(order_id: int, items: list[dict]) -> str:
     log.info("Imprimindo via da cozinha de id: {}".format(order_id))
 
     if isinstance(_print_base(order_id), ReceiptStatus):

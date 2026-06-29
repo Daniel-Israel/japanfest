@@ -141,7 +141,7 @@ def _insert_stock_movements(
     operations._do_insert(session, movements)
 
 
-def _insert_order_receipts(session: Session, order_id: int):
+def _insert_order_receipts(session: Session, order_id: int) -> None:
     receipts = []
     for type in [ReceiptType.client.value, ReceiptType.kitchen.value]:
         receipts.append(
@@ -189,7 +189,7 @@ def create_product_and_stock(
     return product
 
 
-def create_loss(session: Session, loss: models.NewLosses):
+def create_loss(session: Session, loss: models.NewLosses) -> int:
     order_id = _insert_loss(session, loss)
     order_items = _insert_order_items(session, order_id, loss.list_items)
     _insert_stock_loss_moviments(session, loss.loss_type, order_items)

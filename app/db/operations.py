@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Any, Optional, TypeVar, List
+from typing import Any, Optional, TypeVar
 
 from sqlalchemy.engine.result import Result
 from sqlalchemy.orm import Session
@@ -23,7 +23,7 @@ def _execute(session: Session, sql: Select) -> Result:
     return session.execute(sql)
 
 
-def _do_insert(session: Session, items: Sequence[T]) -> List[T]:
+def _do_insert(session: Session, items: Sequence[T]) -> list[T]:
 
     log.info("Inserting %d objects into %s", len(items), session.bind)
 

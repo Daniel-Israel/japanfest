@@ -35,7 +35,7 @@ def alter_order_status(
         .where(orm.Orders.id == id)
         .values(status=new_status.value)
     )
-    session.execute(sql)
+    _execute(session, sql)
     return
 
 
@@ -44,7 +44,7 @@ def alter_receipt_status(
     id: int,
     type: enums.ReceiptType,
     status: enums.ReceiptStatus,
-):
+) -> None:
     sql = (
         update(orm.Receipts)
         .where(orm.Receipts.order_id == id, orm.Receipts.type == type)

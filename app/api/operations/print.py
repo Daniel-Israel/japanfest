@@ -5,11 +5,7 @@ from app.util.enums import ReceiptType
 from app.print.printer import print_client_receipt, print_kitchen_receipt
 
 
-def _fetch_receipt_info(
-    session: Session,
-    order_id: int,
-    type: ReceiptType
-) -> dict:
+def _fetch_receipt_info(session: Session, order_id: int) -> dict:
     receipts = selects.list_receipts(session, order_id)
     for receipt in receipts:
         if receipt.get("type").value == ReceiptType.client.value:
@@ -21,7 +17,7 @@ def _fetch_receipt_info(
 
 def print_receipt(session: Session, order_id: int, type: ReceiptType) -> str:
     payment_method, total_price, items = \
-        _fetch_receipt_info(session, order_id, type)
+        _fetch_receipt_info(session, order_id)
 
     if type == ReceiptType.client:
         result = \
