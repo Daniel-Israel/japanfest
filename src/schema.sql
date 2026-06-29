@@ -14,13 +14,19 @@ CREATE TYPE payment_method AS ENUM (
     'Cartão de Crédito',
     'Cartão de Débito',
     'Dinheiro',
-    'Pix'
+    'Pix',
+    'Perda',
+    'Staff',
+    'Doação'
 );
  
 CREATE TYPE movement_type AS ENUM (
     'Venda',
     'Entrada de Estoque',
-    'Ajuste'
+    'Ajuste',
+    'Perda',
+    'Staff',
+    'Doação'
 );
 
 CREATE TYPE receipt_type AS ENUM (

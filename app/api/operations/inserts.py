@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.db import orm, operations
 from app.api import models
 from app.api.operations import selects
-from app.util.enums import MovementType, ReceiptType
+from app.util.enums import MovementType, ReceiptType, OrderStatus
 from app.util.conversions import to_dict
 from app.api.operations.print import print_receipt
 
@@ -64,6 +64,32 @@ def _insert_order(
         total_price=order.total_price,
     )
     return operations._do_insert(session, [new_order])[0].id
+
+
+def _insert_loss(session: Session, loss: models.NewLosses) -> int:
+    new_loss = orm.Orders(
+        status=OrderStatus.delivered.value,
+        payment_method=loss.loss_type.value,
+        total_price=loss.total_price
+    )
+    return operations._do_insert(session, [new_loss])[0].id
+
+
+def _insert_stock_loss_moviments(
+    session: Session,
+    moviment_type: models.LossType,
+    order_items: list[orm.OrdersItems]
+) -> None:
+    movements = [
+        orm.StockMovements(
+            product_id=item.product_id,
+            order_id=item.order_id,
+            quantity=-(item.quantity),
+            type=moviment_type.value,
+        )
+        for item in order_items
+    ]
+    operations._do_insert(session, movements)
 
 
 def _insert_order_items(
@@ -161,3 +187,10 @@ def create_product_and_stock(
     stock = [models.NewStock(product_id=product.get("id"), quantity=0)]
     create_stock(session, stock)
     return product
+
+
+def create_loss(session: Session, loss: models.NewLosses):
+    order_id = _insert_loss(session, loss)
+    order_items = _insert_order_items(session, order_id, loss.list_items)
+    _insert_stock_loss_moviments(session, loss.loss_type, order_items)
+    return order_id

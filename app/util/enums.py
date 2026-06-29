@@ -13,6 +13,9 @@ class PaymentMethod(PyEnum):
     debit = "Cartão de Débito"
     cash = "Dinheiro"
     pix = "Pix"
+    staff = "Staff"
+    loss = "Perda"
+    donation = "Doação"
 
 
 class ReceiptType(PyEnum):
@@ -30,6 +33,9 @@ class MovementType(PyEnum):
     sale = "Venda"
     restock = "Entrada de Estoque"
     fix = "Ajuste"
+    staff = "Staff"
+    loss = "Perda"
+    donation = "Doação"
 
 
 class IncludeOptions(PyEnum):
@@ -47,3 +53,9 @@ class SortOptions(PyEnum):
 class SortOrderOptions(PyEnum):
     asc = "asc"
     desc = "desc"
+
+
+class LossType(PyEnum):
+    staff = "Staff"
+    loss = "Perda"
+    donation = "Doação"

@@ -81,12 +81,12 @@ async def create_products_customizations(
     return inserts.create_customization(session, customization)
 
 
-@app.get("/products", tags=["Tela Venda"])
+@app.get("/products", tags=["Tela Venda", "Tela Perdas"])
 async def list_products(session: Session = Depends(get_session)):
     return selects.list_products(session)
 
 
-@app.get("/products/{id}/image", tags=["Tela Venda"])
+@app.get("/products/{id}/image", tags=["Tela Venda", "Tela Perdas"])
 async def list_products_images(
     id: int, session: Session = Depends(get_session)
 ):
@@ -100,7 +100,7 @@ async def list_products_customizations(
     return selects.list_product_customizations(session, id)
 
 
-@app.get("/products/categories", tags=["Tela Venda"])
+@app.get("/products/categories", tags=["Tela Venda", "Tela Perdas"])
 async def list_categories(session: Session = Depends(get_session)):
     return selects.list_categories(session)
 
@@ -110,7 +110,7 @@ async def create_payments(pix_info: models.NewPix):
     return create_pix_qr_code(pix_info)
 
 
-@app.post("/orders", tags=["Tela Venda"])
+@app.post("/orders", tags=["Tela Venda", "Tela Perdas"])
 async def create_orders(
     order: models.NewOrder,
     session: Session = Depends(get_session)
@@ -196,3 +196,11 @@ async def alter_receipts_status(
     if status.value == enums.ReceiptStatus.pending.value:
         return print_receipt(session, id, type)
     updates.alter_receipt_status(session, id, type, status)
+
+
+@app.post("/losses", tags=["Tela Perdas"])
+async def create_losses(
+    loss: models.NewLosses,
+    session: Session = Depends(get_session)
+):
+    return inserts.create_loss(session, loss)
